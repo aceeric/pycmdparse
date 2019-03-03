@@ -290,7 +290,7 @@ class CmdLine:
         details, examples, and addendum. If the yaml is missing an entry, then the corresponding
         class field is set to None.
         """
-        parsed = yaml.load(cls.yaml_def)
+        parsed = yaml.load(cls.yaml_def, Loader=yaml.FullLoader)
         cls.program_name = parsed.get("program_name")
         cls.summary = parsed.get("summary")
         cls.usage = parsed.get("usage")
