@@ -72,7 +72,7 @@ class MultiParamOpt(AbstractOpt):
             return OptAcceptResultEnum.ERROR, "{}: requires a value, which was not supplied".format(self._supplied_key)
         self._supplied_key = stack.pop()
         while stack.size() > 0:
-            if stack.peek().startswith("-") and self.multi_type != MultiTypeEnum.EXACTLY:
+            if stack.peek().startswith("-") and self.multi_type is not MultiTypeEnum.EXACTLY:
                 # dash indicates an option: Terminates a multi-param option unless it's an exact count multi
                 break
             if self.multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] and len(self._value) == self._count:

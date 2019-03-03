@@ -128,7 +128,7 @@ class CmdLine:
         """
         if parse_result in [ParseResultEnum.PARSE_ERROR, ParseResultEnum.MISSING_MANDATORY_ARG]:
             ShowInfo.show_errors(cls.parse_errors, cls.program_name)
-        elif parse_result == ParseResultEnum.SHOW_USAGE:
+        elif parse_result is ParseResultEnum.SHOW_USAGE:
             ShowInfo.show_usage(cls.program_name, cls.summary, cls.usage, cls.supported_options,
                                 cls.details, cls.examples, cls.positional_params, cls.addendum)
 
@@ -176,9 +176,9 @@ class CmdLine:
             accept_result = None
             for supported_option in flattened_options:
                 accept_result = supported_option.accept(cmdline_stack)
-                if accept_result[0] != OptAcceptResultEnum.IGNORED:
+                if accept_result[0] is not OptAcceptResultEnum.IGNORED:
                     break
-            if accept_result[0] == OptAcceptResultEnum.IGNORED:
+            if accept_result[0] is OptAcceptResultEnum.IGNORED:
                 if not cmdline_stack.peek().startswith("-"):
                     if not cmdline_stack.has_options():
                         cls._handle_positional_params(cmdline_stack)
@@ -188,7 +188,7 @@ class CmdLine:
                 else:
                     cls._append_error("Unsupported option: '{0}'".format(cmdline_stack.peek()))
                     return ParseResultEnum.PARSE_ERROR
-            elif accept_result[0] == OptAcceptResultEnum.ERROR:
+            elif accept_result[0] is OptAcceptResultEnum.ERROR:
                 cls._append_error(accept_result[1])
                 return ParseResultEnum.PARSE_ERROR
 
@@ -208,12 +208,12 @@ class CmdLine:
         if cls.validator is not None:
             for supported_option in flattened_options:
                 accept_result = cls.validator(supported_option)
-                if accept_result[0] == OptAcceptResultEnum.ERROR:
+                if accept_result[0] is OptAcceptResultEnum.ERROR:
                     cls._append_error(accept_result[1])
                     return ParseResultEnum.PARSE_ERROR
 
             accept_result = cls.validator(cls.positional_params)
-            if accept_result[0] == OptAcceptResultEnum.ERROR:
+            if accept_result[0] is OptAcceptResultEnum.ERROR:
                 cls._append_error(accept_result[1])
                 return ParseResultEnum.PARSE_ERROR
 
