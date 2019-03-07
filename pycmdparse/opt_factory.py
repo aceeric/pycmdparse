@@ -1,9 +1,9 @@
-from cmdline_exception import CmdLineException
-from bool_opt import BoolOpt
-from datatype_enum import DataTypeEnum
-from multiparam_opt import MultiParamOpt
-from multitype_enum import MultiTypeEnum
-from param_opt import ParamOpt
+from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.bool_opt import BoolOpt
+from pycmdparse.datatype_enum import DataTypeEnum
+from pycmdparse.multiparam_opt import MultiParamOpt
+from pycmdparse.multitype_enum import MultiTypeEnum
+from pycmdparse.param_opt import ParamOpt
 
 
 class OptFactory:

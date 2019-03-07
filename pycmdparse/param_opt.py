@@ -1,5 +1,5 @@
-from opt_acceptresult_enum import OptAcceptResultEnum
-from abstract_opt import AbstractOpt
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
+from pycmdparse.abstract_opt import AbstractOpt
 
 
 class ParamOpt(AbstractOpt):

@@ -1,8 +1,8 @@
 import datetime
 import re
 from abc import ABC, abstractmethod
-from opt_acceptresult_enum import OptAcceptResultEnum
-from datatype_enum import DataTypeEnum
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
+from pycmdparse.datatype_enum import DataTypeEnum
 
 
 class AbstractOpt(ABC):

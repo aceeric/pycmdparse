@@ -1,14 +1,14 @@
 import yaml
 
-from opt_acceptresult_enum import OptAcceptResultEnum
-from opt_factory import  OptFactory
-from usage_example import UsageExample
-from cmdline_exception import CmdLineException
-from opt_category import OptCategory
-from parseresult_enum import ParseResultEnum
-from positional_params import PositionalParams
-from showinfo import ShowInfo
-from splitter import Splitter
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
+from pycmdparse.opt_factory import  OptFactory
+from pycmdparse.usage_example import UsageExample
+from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.opt_category import OptCategory
+from pycmdparse.parseresult_enum import ParseResultEnum
+from pycmdparse.positional_params import PositionalParams
+from pycmdparse.showinfo import ShowInfo
+from pycmdparse.splitter import Splitter
 
 
 class CmdLine:

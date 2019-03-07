@@ -1,6 +1,6 @@
 import shutil
 
-from util import Util
+from pycmdparse.util import Util
 
 
 class ShowInfo:

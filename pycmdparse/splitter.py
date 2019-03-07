@@ -1,7 +1,7 @@
 import shlex
 
-from cmdline_exception import CmdLineException
-from stack import Stack
+from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.stack import Stack
 
 
 class Splitter:

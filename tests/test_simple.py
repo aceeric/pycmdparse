@@ -1,19 +1,12 @@
-from pycmdparse import CmdLine, OptAcceptResultEnum, PositionalParams, AbstractOpt, ParseResultEnum
-
-
-def my_validator(to_validate):
-    if isinstance(to_validate, PositionalParams):
-        if len(to_validate.params) != 2:
-            return OptAcceptResultEnum.ERROR, "Incorrect number of positional params. "\
-                                          "Must provide P1 and P2"
-    elif isinstance(to_validate, AbstractOpt):
-        if to_validate.opt_name == "file_name":
-            if to_validate.value == "FOO":
-                return OptAcceptResultEnum.ERROR, "Don't specify FOO as the filename"
-    return None,
+from pycmdparse.cmdline import CmdLine
+from pycmdparse.opt_acceptresult_enum import  OptAcceptResultEnum
+from pycmdparse.positional_params import PositionalParams
+from pycmdparse.abstract_opt import AbstractOpt
+from pycmdparse.parseresult_enum import ParseResultEnum
 
 
 class MyCl(CmdLine):
+    # initialize parent class field with YAML that defines the functionality you want
     yaml_def = '''
     program_name: foo-utility
 
@@ -185,6 +178,20 @@ class MyCl(CmdLine):
 
       Github: https://github.com/theauthor/foo-utility
     '''
+
+    @classmethod
+    def my_validator(cls, to_validate):
+        if isinstance(to_validate, PositionalParams):
+            if len(to_validate.params) != 2:
+                return OptAcceptResultEnum.ERROR, "Incorrect number of positional params. Must provide P1 and P2"
+        elif isinstance(to_validate, AbstractOpt):
+            if to_validate.opt_name == "file_name":
+                if to_validate.value == "FOO":
+                    return OptAcceptResultEnum.ERROR, "Don't specify FOO as the filename"
+        return None,
+
+    # parent class will call this validator - if defined - to validate each arg (one at a time)
+    # as well as the list of positional params (all together) that were parsed
     validator = my_validator
 
     file_name = None
@@ -195,17 +202,19 @@ class MyCl(CmdLine):
     big_vee = None
 
 
-args = "-f /some/file --verbose -V --multi 2019-12-31 01-01-2019 2.2.2019 --max-threads 123 -- POS1 POS2"
-parse_result = MyCl.parse(args)
-if parse_result.value != ParseResultEnum.SUCCESS.value:  # not sure why .value is required...
-    MyCl.display_info(parse_result)
-    exit(1)
+class TestCase:
+    def test_simple(self):
+        args = "-f /some/file --verbose -V --multi 2019-12-31 01-01-2019 2.2.2019 --max-threads 123 -- POS1 POS2"
+        parse_result = MyCl.parse(args)
+        if parse_result.value != ParseResultEnum.SUCCESS.value:  # not sure why .value is required...
+            MyCl.display_info(parse_result)
+            exit(1)
 
-print("file_name             = {}".format(MyCl.file_name))
-print("verbose               = {}".format(MyCl.verbose))
-print("big_vee               = {}".format(MyCl.big_vee))
-print("no_overwrite          = {}".format(MyCl.no_overwrite))
-print("multi_verse           = {}".format(MyCl.multi_verse))
-print("max_threads           = {}".format(MyCl.max_threads))
-print("file_name initialized = {}".format(MyCl.get_option("file_name").initialized))
-print("positional params     = {}".format(MyCl.positional_params.params))
+        print("file_name             = {}".format(MyCl.file_name))
+        print("verbose               = {}".format(MyCl.verbose))
+        print("big_vee               = {}".format(MyCl.big_vee))
+        print("no_overwrite          = {}".format(MyCl.no_overwrite))
+        print("multi_verse           = {}".format(MyCl.multi_verse))
+        print("max_threads           = {}".format(MyCl.max_threads))
+        print("file_name initialized = {}".format(MyCl.get_option("file_name").initialized))
+        print("positional params     = {}".format(MyCl.positional_params.params))

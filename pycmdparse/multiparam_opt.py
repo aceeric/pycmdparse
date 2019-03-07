@@ -1,6 +1,6 @@
-from multitype_enum import MultiTypeEnum
-from opt_acceptresult_enum import OptAcceptResultEnum
-from abstract_opt import AbstractOpt
+from pycmdparse.multitype_enum import MultiTypeEnum
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
+from pycmdparse.abstract_opt import AbstractOpt
 
 
 class MultiParamOpt(AbstractOpt):
