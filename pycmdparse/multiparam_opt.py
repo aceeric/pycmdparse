@@ -57,11 +57,14 @@ class MultiParamOpt(AbstractOpt):
     """
     def __init__(self, opt_name, short_key, long_key, opt_hint, required, is_internal, default_value,
                  multi_type, count, data_type, help_text):
+        if default_value is not None and not isinstance(default_value, list):
+            default_value = [default_value]
         super().__init__(opt_name, short_key, long_key, opt_hint, required, is_internal, default_value,
                          data_type, help_text)
         self.multi_type = multi_type
         self._count = count
-        self._value = []
+        if self._value is None:
+            self._value = []
 
     @property
     def value(self):

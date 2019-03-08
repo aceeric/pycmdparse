@@ -10,7 +10,7 @@ class Splitter:
     """
 
     @staticmethod
-    def split_str(cmdline_str):
+    def split_str(cmdline_str, has_options):
         """
         Splits a string, like "-f filename -ctv --foo=bar". First, the passed
         string is split with the shlex split function - which splits on all
@@ -19,30 +19,37 @@ class Splitter:
         function to handle breaking compound options, etc.
 
         :param cmdline_str: a string, such as one provided on a command line
+        :param has_options: True if the arg parse spec indicates that options are
+        defined, else false (all args in this case are positional params)
 
         :return: a Stack. In the above example, would return a stack:
         '["-f", "filename", "-c", "-t", "-v", "--foo", "bar"]' with left
         at top and right at bottom. (First pop yields "-f".)
         """
-        return Splitter.split_list(shlex.split(cmdline_str))
+        return Splitter.split_list(shlex.split(cmdline_str), has_options)
 
     @staticmethod
-    def split_list(cmdline):
+    def split_list(cmdline, has_options):
         """
         Splits a command line, like one provided by the Python interpreter.
         Splits concatenated single-char options into separate options. Splits
-        "X=Y" into ["X", "Y"]
+        "X=Y" into ["X", "Y"]. Only does this additional splitting if has_options
+        is True. If has_options is False, then that means the arg parse spec
+        indicates that there are no options (no -x or --thing) so in this case,
+        everything is a positional parameter.
 
         The result is a list of tokens for subsequent left-to-right parsing.
 
         :param cmdline: a List. E.g.: '["-f", "filename", "-ctv", "--foo=bar"]'
+        :param has_options: True if the arg parse spec indicates that options are
+        defined, else false (all args in this case are positional params)
 
         :return: a Stack. In the above example, would return a stack:
         '["-f", "filename", "-c", "-t", "-v", "--foo", "bar"]' with left
         at top and right at bottom. (First pop yields "-f".)
         """
         token_list = []
-        in_positional_params = False
+        in_positional_params = False if has_options else True
         for token in cmdline:
             if in_positional_params or token == "--":
                 token_list.append(token)

@@ -1,8 +1,8 @@
-from pycmdparse.cmdline import CmdLine
-from pycmdparse.opt_acceptresult_enum import  OptAcceptResultEnum
-from pycmdparse.positional_params import PositionalParams
 from pycmdparse.abstract_opt import AbstractOpt
+from pycmdparse.cmdline import CmdLine
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.parseresult_enum import ParseResultEnum
+from pycmdparse.positional_params import PositionalParams
 
 
 class MyCl(CmdLine):

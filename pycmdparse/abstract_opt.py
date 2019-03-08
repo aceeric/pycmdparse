@@ -45,10 +45,12 @@ class AbstractOpt(ABC):
         self._default_value = default_value
         self._data_type = data_type
         self._help_text = help_text
-        if required and default_value is not None:
+        if not required and default_value is not None:
             self._initialized = True
             self._value = default_value
         else:
+            # if required, ignore the default value because the option must be provide
+            # on the command line or the arg parser will return a parse error
             self._initialized = False
             self._value = None
         self._supplied_key = None # they option actually encountered on the command line (e.g. "-f", or "--filename")

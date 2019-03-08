@@ -90,8 +90,25 @@ class CmdLine:
     author information, Github URL, website URLs, etc.
     """
 
-    parse_errors = []
+    parse_errors = None
     """Initialized by the parser with any errors encountered during command-line parsing"""
+
+    @classmethod
+    def reset(cls):
+        """
+        Supports testing. Nulls the class object out
+        """
+        cls.positional_params = None
+        cls.supported_options = None
+        cls.validator = None
+        cls.details = None
+        cls.addendum = None
+        cls.examples = None
+        cls.usage = None
+        cls.summary = None
+        cls.program_name = None
+        cls.parse_errors = None
+        cls.yaml_def = None
 
     @classmethod
     def __repr__(cls):
@@ -127,7 +144,8 @@ class CmdLine:
         :param parse_result: the result of a prior command line parse operation
         """
         if parse_result in [ParseResultEnum.PARSE_ERROR, ParseResultEnum.MISSING_MANDATORY_ARG]:
-            ShowInfo.show_errors(cls.parse_errors, cls.program_name)
+            if cls.parse_errors is not None and len(cls.parse_errors) > 0:
+                ShowInfo.show_errors(cls.parse_errors, cls.program_name)
         elif parse_result is ParseResultEnum.SHOW_USAGE:
             ShowInfo.show_usage(cls.program_name, cls.summary, cls.usage, cls.supported_options,
                                 cls.details, cls.examples, cls.positional_params, cls.addendum)
@@ -147,10 +165,11 @@ class CmdLine:
         :return: an ParseResultEnum, indicating the results of the command-line parse.
         """
         cls._init_from_yaml()
+        has_options = True if cls.supported_options is not None else False
         if type(cmd_line) is str:
-            cmdline_stack = Splitter.split_str(cmd_line)
+            cmdline_stack = Splitter.split_str(cmd_line, has_options)
         elif type(cmd_line) is list:
-            cmdline_stack = Splitter.split_list(cmd_line)
+            cmdline_stack = Splitter.split_list(cmd_line, has_options)
         else:
             raise CmdLineException("Can only parse a string, or a list")
         return cls._parse(cmdline_stack)
@@ -166,31 +185,32 @@ class CmdLine:
         :return: a ParseResultEnum object indicating the result of the parse
         """
         flattened_options = CmdLine._flatten(cls.supported_options)
-        while cmdline_stack.size() > 0:
-            if cmdline_stack.peek().lower() in ["-h", "--help"]:
-                return ParseResultEnum.SHOW_USAGE
-            if cmdline_stack.peek() == "--":
-                cmdline_stack.pop()
-                cls._handle_positional_params(cmdline_stack)
-                break
-            accept_result = None
-            for supported_option in flattened_options:
-                accept_result = supported_option.accept(cmdline_stack)
-                if accept_result[0] is not OptAcceptResultEnum.IGNORED:
+        if len(flattened_options) > 0:  # if empty, then no options, so all command-line args are positional params
+            while cmdline_stack.size() > 0:
+                if cmdline_stack.peek().lower() in ["-h", "--help"]:
+                    return ParseResultEnum.SHOW_USAGE
+                if cmdline_stack.peek() == "--":
+                    cmdline_stack.pop()
+                    cls._handle_positional_params(cmdline_stack)
                     break
-            if accept_result[0] is OptAcceptResultEnum.IGNORED:
-                if not cmdline_stack.peek().startswith("-"):
-                    if not cmdline_stack.has_options():
-                        cls._handle_positional_params(cmdline_stack)
+                accept_result = OptAcceptResultEnum.IGNORED,
+                for supported_option in flattened_options:
+                    accept_result = supported_option.accept(cmdline_stack)
+                    if accept_result[0] is not OptAcceptResultEnum.IGNORED:
+                        break
+                if accept_result[0] is OptAcceptResultEnum.IGNORED:
+                    if not cmdline_stack.peek().startswith("-"):
+                        if not cmdline_stack.has_options():
+                            cls._handle_positional_params(cmdline_stack)
+                        else:
+                            cls._append_error("Unsupported option: '{0}'".format(cmdline_stack.peek()))
+                            return ParseResultEnum.PARSE_ERROR
                     else:
                         cls._append_error("Unsupported option: '{0}'".format(cmdline_stack.peek()))
                         return ParseResultEnum.PARSE_ERROR
-                else:
-                    cls._append_error("Unsupported option: '{0}'".format(cmdline_stack.peek()))
+                elif accept_result[0] is OptAcceptResultEnum.ERROR:
+                    cls._append_error(accept_result[1])
                     return ParseResultEnum.PARSE_ERROR
-            elif accept_result[0] is OptAcceptResultEnum.ERROR:
-                cls._append_error(accept_result[1])
-                return ParseResultEnum.PARSE_ERROR
 
         if cmdline_stack.size() > 0:
             cls._handle_positional_params(cmdline_stack)
@@ -233,8 +253,9 @@ class CmdLine:
         :return: a list of only options
         """
         to_return = []
-        for category in supported_opts:
-            to_return.extend(category.options)
+        if supported_opts is not None:
+            for category in supported_opts:
+                to_return.extend(category.options)
         return to_return
 
     @classmethod
@@ -258,6 +279,8 @@ class CmdLine:
 
         :param err_message: the error message to append
         """
+        if cls.parse_errors is None:
+            cls.parse_errors = []
         cls.parse_errors.append(err_message)
 
     @classmethod
@@ -296,16 +319,18 @@ class CmdLine:
         cls.usage = parsed.get("usage")
         if parsed.get("positional_params") is not None:
             cls.positional_params = PositionalParams(parsed.get("positional_params"))
-        for category in parsed.get("supported_options"):
-            opt_cat = OptCategory(category.get("category"))
-            for opt in category.get("options"):
-                opt_cat.options.append(OptFactory.create_option(opt))
-            if cls.supported_options is None:
-                cls.supported_options = []
-            cls.supported_options.append(opt_cat)
+        if parsed.get("supported_options") is not None:
+            for category in parsed.get("supported_options"):
+                opt_cat = OptCategory(category.get("category"))
+                for opt in category.get("options"):
+                    opt_cat.options.append(OptFactory.create_option(opt))
+                if cls.supported_options is None:
+                    cls.supported_options = []
+                cls.supported_options.append(opt_cat)
         cls.details = parsed.get("details")
-        for example in parsed.get("examples"):
-            if cls.examples is None:
-                cls.examples = []
-            cls.examples.append(UsageExample(example))
+        if parsed.get("examples") is not None:
+            for example in parsed.get("examples"):
+                if cls.examples is None:
+                    cls.examples = []
+                cls.examples.append(UsageExample(example))
         cls.addendum = parsed.get("addendum")
