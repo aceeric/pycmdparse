@@ -195,16 +195,25 @@ class AbstractOpt(ABC):
         doesn't match the type, then returns None.
         """
         if self.data_type is DataTypeEnum.INT:
+            if isinstance(value, int):
+                return value
             try:
                 return int(value)
             except:
                 return None
         elif self.data_type is DataTypeEnum.DECIMAL:
+            if isinstance(value, float):
+                return value
             try:
                 return float(value)
             except:
                 return None
         elif self.data_type is DataTypeEnum.DATE:
+            if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
+                if isinstance(value, datetime.datetime):
+                    return value.date()
+                else:
+                    return value
             try:
                 return AbstractOpt._parse_date(value)
             except:
@@ -232,7 +241,7 @@ class AbstractOpt(ABC):
             if g is not None and len(g.groups()) == 2:
                 format = formats[format]
                 format = format.replace("1", g.groups()[0]).replace("2", g.groups()[1])
-                return datetime.datetime.strptime(value, format)
+                return datetime.datetime.strptime(value, format).date()
         return None
 
     @abstractmethod

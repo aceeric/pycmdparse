@@ -9,7 +9,8 @@ def setup_function(function):
 def test_bool_opt():
     class TestCmdLine(CmdLine):
         """
-        Test bool option type - one provided on the command line, and one not
+        Test the bool option type - one provided on the command line, and one not
+        A bool option type is False if not provided on the command line, else True
         """
         yaml_def = '''
             supported_options:
@@ -40,6 +41,7 @@ def test_param_opt():
     class TestCmdLine(CmdLine):
         """
         Test param option type - one provided on the command line and one not
+        A param option is an option that takes exactly one param
         """
         yaml_def = '''
             supported_options:
@@ -70,7 +72,8 @@ def test_multi_param_opt():
     class TestCmdLine(CmdLine):
         """
         Test basic multi param: one equals, one at-most, and one no-limit with
-        args provided so each param gets a defined number of values
+        args provided so each param gets a defined number of values. A multi-param
+        option is an option that can take multiple params
         """
         yaml_def = '''
             supported_options:
@@ -120,7 +123,9 @@ def test_multi_param_opt():
 def test_positional_params():
     """
     No options specified - only positional params so everything
-    on the command line is a positional param
+    on the command line is a positional param. Positional params are
+    those tokens on the command line after all known options are parsed,
+    or, all the tokens if there aren't any known options
     :return:
     """
     class TestCmdLine(CmdLine):

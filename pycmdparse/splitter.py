@@ -36,7 +36,7 @@ class Splitter:
         "X=Y" into ["X", "Y"]. Only does this additional splitting if has_options
         is True. If has_options is False, then that means the arg parse spec
         indicates that there are no options (no -x or --thing) so in this case,
-        everything is a positional parameter.
+        everything on the command line is taken as a positional parameter.
 
         The result is a list of tokens for subsequent left-to-right parsing.
 

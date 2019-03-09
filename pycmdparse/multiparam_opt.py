@@ -1,6 +1,7 @@
 from pycmdparse.multitype_enum import MultiTypeEnum
 from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.abstract_opt import AbstractOpt
+from pycmdparse.cmdline_exception import CmdLineException
 
 
 class MultiParamOpt(AbstractOpt):
@@ -65,6 +66,8 @@ class MultiParamOpt(AbstractOpt):
         self._count = count
         if self._value is None:
             self._value = []
+        elif not self._handle_data_type():
+            raise CmdLineException("Data type does not match specification: {}".format(self._value))
 
     @property
     def value(self):
@@ -95,3 +98,19 @@ class MultiParamOpt(AbstractOpt):
                 self._value[i] = tmp
         self._initialized = True
         return OptAcceptResultEnum.ACCEPTED,
+
+    def _handle_data_type(self):
+        """
+        Ensure that the object value conforms to the object's data type
+
+        :return: True if the object has a defined data type, and the object value is
+        in conformance - or - the object has no defined type. Returns False if the object
+        has a defined type and the value is not in conformance
+        """
+        if self.data_type is not None:
+            for i in range(0, len(self._value)):
+                tmp = self._validate_datatype(self._value[i])
+                if tmp is None:
+                    return False
+                self._value[i] = tmp
+        return True

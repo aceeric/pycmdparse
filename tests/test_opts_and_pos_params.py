@@ -10,7 +10,8 @@ def test_options_and_positional_params_1():
     class TestCmdLine(CmdLine):
         """
         Tests that positional params are picked up when all known
-        args are handled - everything left is positional
+        args are handled - everything remaining on the command line
+        is a positional param
         """
         yaml_def = '''
             positional_params:

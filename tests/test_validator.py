@@ -12,7 +12,8 @@ def setup_function(function):
 def test_param_opt_validator():
     class TestCmdLine(CmdLine):
         """
-        Test validation of a param-type option - supplied by the CmdLine subclass
+        Test validation of a param-type option - using a validator defined
+        in the CmdLine subclass
         """
         yaml_def = '''
             supported_options:
@@ -47,7 +48,8 @@ def test_param_opt_validator():
 def test_positional_param_validator():
     class TestCmdLine(CmdLine):
         """
-        Test validation of positional params - supplied by the CmdLine subclass
+        Test validation of positional params - using a validator defined
+        in the CmdLine subclass
         """
         yaml_def = '''
             positional_params:

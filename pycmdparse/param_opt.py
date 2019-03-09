@@ -1,5 +1,6 @@
 from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.abstract_opt import AbstractOpt
+from pycmdparse.cmdline_exception import CmdLineException
 
 
 class ParamOpt(AbstractOpt):
@@ -12,6 +13,9 @@ class ParamOpt(AbstractOpt):
                  data_type, help_text):
         super().__init__(opt_name, short_key, long_key, opt_hint, required, is_internal, default_value,
                          data_type, help_text)
+        if self._value is not None:
+            if not self._handle_data_type():
+                raise CmdLineException("Data type does not match specification: {}".format(self._value))
 
     @property
     def value(self):
@@ -30,3 +34,18 @@ class ParamOpt(AbstractOpt):
             self._value = tmp
         self._initialized = True
         return OptAcceptResultEnum.ACCEPTED,
+
+    def _handle_data_type(self):
+        """
+        Ensure that the object value conforms to the object's data type
+
+        :return: True if the object has a defined data type, and the object value is
+        in conformance - or - the object has no defined type. Returns False if the object
+        has a defined type and the value is not in conformance
+        """
+        if self.data_type is not None:
+            tmp = self._validate_datatype(self._value)
+            if tmp is None:
+                return False
+            self._value = tmp
+        return True
