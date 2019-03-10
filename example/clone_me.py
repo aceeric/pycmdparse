@@ -71,7 +71,7 @@ class MyCmdLine(CmdLine):
     '''
 
     @classmethod
-    def my_validator(cls, to_validate):
+    def validator(cls, to_validate):
         some_error_condition = False
         if isinstance(to_validate, PositionalParams):
             if some_error_condition:
@@ -81,8 +81,6 @@ class MyCmdLine(CmdLine):
                 if some_error_condition:
                     return OptAcceptResultEnum.ERROR, "TODO error message"
         return None,
-
-    validator = my_validator
 
     tbd1 = None
     tbd2 = None

@@ -113,3 +113,22 @@ def test_multiple_cats():
     assert TestCmdLine.b_opt
     assert TestCmdLine.c_opt
     assert TestCmdLine.d_opt
+
+
+def test_empty_1():
+    class TestCmdLine(CmdLine):
+        pass
+    args = "util-name -v"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value # no yaml no parsing
+    assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['-v']"
+
+
+def test_empty_2():
+    class TestCmdLine(CmdLine):
+        pass
+    args = "util-name"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.SUCCESS.value  # no args so, success
+    # nothing happens - just make sure it doesnt raise
+    TestCmdLine.show_usage()

@@ -1,7 +1,7 @@
 # pycmdparse
 Python command line parser, and usage instructions generator
 
-There are many command-line parse utilities around, but I decided to make my own. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions. I originally wrote this in C# to support a project that I was on which required me to develop several C#/.Net console utilities, so this is a port to Python from C#.
+There are many command-line parse utilities around, but I decided to make my own for fun. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions. I originally wrote this in C# to support a project that I was on which required me to develop several C#/.Net console utilities. I was interested to see what would be involved to transcribe something to Python that had originally been written in C#.
  
 The goals of pycmdparse are:
 
@@ -77,6 +77,3 @@ The second option type is `param`. A `param` option accepts one or more paramete
 
 ### todo...
 1. Complete the packaging
-2. Complete THE tests
-
-

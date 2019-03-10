@@ -9,7 +9,7 @@ my-utility --exact2 ONE --exact2 TWO
 
 And the result is that field 'exact2'  contains the value ['ONE', 'TWO']
 
-If EXACT 2, then the following is causes a parse error:
+If EXACT 2, then the following is a parse error:
 
 my-utility --exact2 ONE --exact2 TWO THREE
 
@@ -41,9 +41,9 @@ def setup_function(function):
 def test_exactly_three_opt_repeating():
     """Shows a pitfall of EXACTLY. The first option consumes exactly three params
     without being stopped by a subsequent option. Because EXACT means the parser will
-    try to get as many tokens as possible from the arg stream. Then when the third
-    --test-opt option  is parsed, the exact option count is already exceeded,
-    triggering the parse error"""
+    try to get as many tokens as possible from the arg stream to match the specified
+    count. Then when the third --test-opt option is parsed, the exact option count
+    is already exceeded, triggering the parse error"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:

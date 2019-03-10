@@ -46,12 +46,12 @@ class AbstractOpt(ABC):
         readable, but is supported. An invalid Python identifier raises an exception.
 
         """
-        self._opt_name = next(el for el in [opt_name, long_key, short_key] if el is not None)
-        if self._opt_name is None:
-            raise CmdLineException("No valid option name from: {}".format([opt_name, long_key, short_key]))
-        self._opt_name = self._opt_name.replace('-', '_')
+        if long_key is None and short_key is None:
+            raise CmdLineException("YAML must specify 'short' or 'long' option key")
         if short_key is not None and len(short_key) != 1:
-            raise CmdLineException("Invalid short key: {}".format(short_key))
+            raise CmdLineException("Invalid short key: '{}'".format(short_key))
+
+        self._opt_name = next(el for el in [opt_name, long_key, short_key] if el is not None).replace('-', '_')
         self._short_key = short_key
         self._long_key = long_key
         self._opt_hint = opt_hint
@@ -65,7 +65,7 @@ class AbstractOpt(ABC):
             # an optional param with a default is immediately considered initialized
             self._initialized = True
         else:
-            # if required, ignore the default value because the option must be provide
+            # if required, ignore the default value because the option must be provided
             # on the command line or the arg parser will return a parse error
             self._initialized = False
         self._supplied_key = None # they option actually encountered on the command line (e.g. "-f", or "--filename")
@@ -74,9 +74,9 @@ class AbstractOpt(ABC):
     def __repr__(self):
         s = "opt_name: {} short_key: {}; long_key: {}; value: {}; required: {}; hint: {}; is_internal: {}; "\
             "initialized: {}; default value: {}; data_type: {}; help_text: {}"
-        return s.format(self.opt_name, self.short_key, self.long_key, self.value, self.required, self.opt_hint,
-                        self.is_internal, self.initialized, self.default_value,
-                        self.data_type, self.help_text)
+        return s.format(self._opt_name, self._short_key, self._long_key, self._value, self._required, self._opt_hint,
+                        self._is_internal, self._initialized, self._default_value,
+                        self._data_type, self._help_text)
 
     @property
     def opt_name(self):
@@ -103,13 +103,13 @@ class AbstractOpt(ABC):
         "-t, --timeout <n>". Etc.
         """
         s = ""
-        if self.short_key is not None:
-            s += "-" + self.short_key
-        if self.long_key is not None:
+        if self._short_key is not None:
+            s += "-" + self._short_key
+        if self._long_key is not None:
             s += "" if len(s) == 0 else ","
-            s += "--" + self.long_key
-        if self.opt_hint is not None:
-            s += " <" + self.opt_hint + ">"
+            s += "--" + self._long_key
+        if self._opt_hint is not None:
+            s += " <" + self._opt_hint + ">"
         return s
 
     @property
@@ -178,11 +178,11 @@ class AbstractOpt(ABC):
         is defined, then returns only that part.
         """
         to_return = ""
-        if self.short_key is not None:
-            to_return += "-" + self.short_key
-        if self.long_key is not None:
+        if self._short_key is not None:
+            to_return += "-" + self._short_key
+        if self._long_key is not None:
             to_return += "/" if len(to_return) > 0 else ""
-            to_return += "--" + self.long_key
+            to_return += "--" + self._long_key
         return to_return
 
     def accept(self, stack):
@@ -203,7 +203,7 @@ class AbstractOpt(ABC):
             # only match options starting with dash or double dash. (Triple-dash is ignored, according to
             # the philosophy of "prevent small problems")
             return OptAcceptResultEnum.IGNORED,
-        if stack.peek().lstrip("-") in [self.short_key, self.long_key]:
+        if stack.peek().lstrip("-") in [self._short_key, self._long_key]:
             return self._do_accept(stack)
         return OptAcceptResultEnum.IGNORED,
 
@@ -218,21 +218,21 @@ class AbstractOpt(ABC):
         If a data type is not defined, then returns None. If a data type is defined and the value
         doesn't match the type, then returns None.
         """
-        if self.data_type is DataTypeEnum.INT:
+        if self._data_type is DataTypeEnum.INT:
             if isinstance(value, int):
                 return value
             try:
                 return int(value)
             except:
                 return None
-        elif self.data_type is DataTypeEnum.DECIMAL:
+        elif self._data_type is DataTypeEnum.DECIMAL:
             if isinstance(value, float):
                 return value
             try:
                 return float(value)
             except:
                 return None
-        elif self.data_type is DataTypeEnum.DATE:
+        elif self._data_type is DataTypeEnum.DATE:
             if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
                 if isinstance(value, datetime.datetime):
                     return value.date()
@@ -252,20 +252,19 @@ class AbstractOpt(ABC):
 
         :param value: a string to convert to a date
 
-        :return: a datetime.datetime object if the conversion could be performed,
+        :return: a datetime.date object if the conversion could be performed,
         otherwise None
         """
-        formats = {
+        patterns = {
             "^[0-9]{2,4}([-/\\.])[0-9]{1,2}([-/\\.])[0-9]{1,2}$": "%Y1%m2%d",
             "^[0-9]{1,2}([-/\\.])[0-9]{1,2}([-/\\.])[0-9]{2,4}$": "%m1%d2%Y"
         }
-        for format in formats.keys():
-            p = re.compile(format)
+        for pattern in patterns.keys():
+            p = re.compile(pattern)
             g = p.match(value)
             if g is not None and len(g.groups()) == 2:
-                format = formats[format]
-                format = format.replace("1", g.groups()[0]).replace("2", g.groups()[1])
-                return datetime.datetime.strptime(value, format).date()
+                to_return = patterns[pattern].replace("1", g.groups()[0]).replace("2", g.groups()[1])
+                return datetime.datetime.strptime(value, to_return).date()
         return None
 
     @abstractmethod
@@ -285,9 +284,9 @@ class AbstractOpt(ABC):
     @abstractmethod
     def _do_final_validate(self):
         """
-        After all command line args parsed, give args a chance to do final validation. Supports
-        scenario like "mu-util -f VAL1 -f VAL2 -f VAL3. Now, the '-f' opt has three values. Is that
-        ok? We can't check until the entire command line has been parsed
+        After all command line args parsed, give options a chance to do final validation. Supports
+        scenario like "my-util -f VAL1 -f VAL2 -f VAL3. Now, the '-f' opt has three values. Is that
+        ok? Can't do the check until the entire command line has been parsed
 
         :return: a tuple: element zero is an OptAcceptResultEnum value, element one is an
         error message if element zero is OptAcceptResultEnum.ERROR

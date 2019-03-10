@@ -103,18 +103,23 @@ class ShowInfo:
         :param positional_params: " positional params
         :param max_len: max console width
         """
+        if not utility_name and not supported_options and not positional_params:
+            return
+
         print("Usage:\n")
         utility_name = utility_name + " " if utility_name is not None else ""
         line = utility_name
-        for category in supported_options:
-            for option in category.options:
-                k = "[" + option.keys_and_hint + "]"
-                if len(line) + len(k) > max_len:
-                    print(line)
-                    line = ShowInfo._fixed(" ", len(utility_name))
-                line += k + " "
 
-        if positional_params is not None:
+        if supported_options:
+            for category in supported_options:
+                for option in category.options:
+                    k = "[" + option.keys_and_hint + "]"
+                    if len(line) + len(k) > max_len:
+                        print(line)
+                        line = ShowInfo._fixed(" ", len(utility_name))
+                    line += k + " "
+
+        if positional_params:
             param_text = positional_params.param_text
             for word in param_text.split():
                 if len(line) + len(word) > max_len:

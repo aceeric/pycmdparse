@@ -82,7 +82,7 @@ class ParamOpt(AbstractOpt):
         # validate defaults against instance data type
         if not self._ensure_data_type(self._default_value):
             raise CmdLineException("Data type does not match specification: {}".format(self._value))
-        if self._multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] and len(self._value) > self.count:
+        if self._multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] and len(self._value) > self._count:
             raise CmdLineException("Invalid defaults supplied: {}".format(self._value))
 
     @property
@@ -93,7 +93,7 @@ class ParamOpt(AbstractOpt):
         values - which could be empty.
         """
         to_return = self._value if self._initialized and self._from_cmdline else self._default_value
-        if self.multi_type is MultiTypeEnum.EXACTLY and self.count == 1:
+        if self._multi_type is MultiTypeEnum.EXACTLY and self._count == 1:
             return to_return[0] if to_return is not None and len(to_return) == 1 else None
         return [] if to_return is None else to_return
 
@@ -102,10 +102,10 @@ class ParamOpt(AbstractOpt):
             return OptAcceptResultEnum.ERROR, "{}: requires a value, which was not supplied".format(self._supplied_key)
         self._supplied_key = stack.pop()
         while stack.size() > 0:
-            if stack.peek().startswith("-") and self.multi_type is not MultiTypeEnum.EXACTLY:
+            if stack.peek().startswith("-") and self._multi_type is not MultiTypeEnum.EXACTLY:
                 # next option terminates param collection unless it's an exact count param
                 break
-            if self.multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] and len(self._value) == self.count:
+            if self._multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] and len(self._value) == self._count:
                 break
             self._value.append(stack.pop())
         return OptAcceptResultEnum.ACCEPTED,
@@ -146,13 +146,13 @@ class ParamOpt(AbstractOpt):
             # nothing from the command line - probably not provided - caller must handle
             return OptAcceptResultEnum.IGNORED,
 
-        if self.multi_type is MultiTypeEnum.EXACTLY and len(self._value) != self.count:
+        if self._multi_type is MultiTypeEnum.EXACTLY and len(self._value) != self._count:
             return OptAcceptResultEnum.ERROR, "{}: expected {} parameter(s) but found {}".format(
-                self._supplied_key, self.count, len(self._value))
+                self._supplied_key, self._count, len(self._value))
 
         if not self._ensure_data_type(self._value):
             return OptAcceptResultEnum.ERROR, "{}: {} has incorrect data type. Expected {}".format(
-                self._supplied_key, self._value, self.data_type.tostr())
+                self._supplied_key, self._value, self._data_type.tostr())
 
         self._initialized = True
         self._from_cmdline = True

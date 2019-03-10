@@ -13,7 +13,7 @@ class MyCmdLine(CmdLine):
 
     The developer use case is:
 
-    1) Subclass the 'CmdLine' class, and provides a yaml definition for the
+    1) Subclass the 'CmdLine' class, and provide a yaml definition for the
        utility's command line and usage instructions, based on this example.
     2) Call the inherited parse method of the sub-class. This will first parse the yaml
        to build an internal set of data structures, then parse the command line using those
@@ -24,7 +24,7 @@ class MyCmdLine(CmdLine):
        window width.)
     4) If the command line is successfully parsed, the utility can use the injected fields
        to obtain the values of the command line options provided by the user. The injected
-       field names are specified  in the yaml. If desired, the values can be type-validated.
+       field names are specified in the yaml. If desired, the values can be type-validated.
        The utility can also perform custom validation using a provided validation hook.
 
     The requirements for how to format the yaml are in the yaml below.
@@ -268,12 +268,13 @@ class MyCmdLine(CmdLine):
     '''
 
     @classmethod
-    def my_validator(cls, to_validate):
+    def validator(cls, to_validate):
         """
         Provides an optional custom validator. The validator is called by the parser
         to validate each arg (one at a time) as well as the list of positional
         params (all together) that were parsed from the command line. This callback
-        occurs after all built-in parsing is complete and has passed.
+        occurs after all built-in parsing is complete and has passed: only if it is a
+        class function, and only if the function is named 'validator'
 
         :param to_validate: an instance of 'PositionalParams', or an instance of
         a subclass of 'AbstractOpt'
@@ -298,12 +299,9 @@ class MyCmdLine(CmdLine):
                     return OptAcceptResultEnum.ERROR, "{} exceeds max recursion level of 92".format(to_validate.value)
         return None,
 
-    validator = my_validator
-    """Defined as None in the base class, optionally assigned in the subclass"""
-
-    # These are the injected fields using the field names from the supported_options yaml section.
+    # Fields below are injected using the field names from the supported_options yaml section.
     # It's not necessary to define them. If not defined, they are injected. If defined, their
-    # values are set from the command line. This example sets them explicitly so that the IDE
+    # values are set from the command line. This example sets them explicitly so the IDE
     # doesn't emanate 'unresolved attribute' warnings when referenced outside the class
 
     verbose = None
@@ -334,7 +332,7 @@ if __name__ == "__main__":
     python example/example.py my-file-1 my-file-2
     """
     # un-comment to run independently of the command line
-    #sys.argv = "example/example.py --exclude TING TANG WALLA WALLA BING BANG -vd 34 /home/me/my-file"
+    # sys.argv = "example/example.py --exclude TING TANG WALLA WALLA BING BANG -vd 34 /home/me/my-file"
     parse_result = MyCmdLine.parse(sys.argv)
     if parse_result.value != ParseResultEnum.SUCCESS.value:
         MyCmdLine.display_info(parse_result)
@@ -342,5 +340,5 @@ if __name__ == "__main__":
     print("verbose = {}".format(MyCmdLine.verbose))
     print("exclude = {}".format(MyCmdLine.exclude))
     print("depth = {}".format(MyCmdLine.depth))
-    print("positional params = {}".format(MyCmdLine.positional_params.params))
+    print("positional params = {}".format(MyCmdLine.positional_params))
     exit(0)

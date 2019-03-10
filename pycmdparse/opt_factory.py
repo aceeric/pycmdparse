@@ -11,13 +11,16 @@ class OptFactory:
     dictionary provided by the yaml parser.
     """
 
-    OPT = "opt"
+    OPT_KEY = "opt"
     """The yaml for an option must include this entry, specifying the option type"""
-    BOOL = "bool"
+
+    BOOL_OPT = "bool"
     """A boolean option - an option that doesn't take a parameter"""
-    PARAM = "param"
+
+    PARAM_OPT = "param"
     """An option that takes one or more parameters"""
-    KNOWN_OPTION_TYPES = [BOOL, PARAM]
+
+    KNOWN_OPTION_TYPES = [BOOL_OPT, PARAM_OPT]
     """The valid values that can be specified in the 'opt' dictionary entry in the yaml spec"""
 
     @staticmethod
@@ -29,15 +32,18 @@ class OptFactory:
         :param opt_dict: A dictionary provided by the yaml parser, representing the
         spec for an option
 
-        :return: a subclass of 'AbstractOpt' if the passed dictionary contains an "opt" entry,
-        and, that entry value is a known option type.
+        :return: a subclass of 'AbstractOpt' based on the passed dictionary "opt" entry value.
+        If the dictionary doesn't contain an opt entry, then a PARAM type is created. This is
+        done as a convenience to eliminate the need to specify the option type in the
+        yaml.
 
-        :raises: CmdLineException if the passed dictionary does not contains an "opt" entry,
-        or, the entry value is not a known option type. See OptFactory.KNOWN_OPTION_TYPES
-        for known option types.
+        :raises: CmdLineException if the passed dictionary contains an "opt" entry value
+        that is not a known option type. (See OptFactory.KNOWN_OPTION_TYPES)
         """
 
-        option_type = opt_dict.get(OptFactory.OPT)
+        option_type = opt_dict.get(OptFactory.OPT_KEY)
+        if option_type is None:
+            option_type = OptFactory.PARAM_OPT
         if option_type in OptFactory.KNOWN_OPTION_TYPES:
             return OptFactory._new_option(option_type, opt_dict)
         else:
@@ -67,7 +73,7 @@ class OptFactory:
         data_type = DataTypeEnum.fromstr(opt_dict.get("datatype"))
         help_text = opt_dict.get("help")
 
-        if opt_type == OptFactory.BOOL:
+        if opt_type == OptFactory.BOOL_OPT:
             return BoolOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, help_text)
         else:  # param
             multi_type = MultiTypeEnum.fromstr(opt_dict.get("multi_type"))

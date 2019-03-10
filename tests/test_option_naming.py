@@ -134,7 +134,7 @@ def test_short_form_3():
             - short: t
               opt  : bool
         '''
-        test_opt = None
+        t = None
     args = "util-name -t"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
@@ -150,8 +150,59 @@ def test_short_form_4():
             - short: t
               opt  : bool
         '''
-        test_opt = None
+        t = None
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert not TestCmdLine.t
+
+
+def test_invalid_1():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            # no name -- no short or long key
+            - opt  : bool
+        '''
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+        assert False
+    except CmdLineException as e:
+        assert e.args[0] == "YAML must specify 'short' or 'long' option key"
+
+
+def test_invalid_2():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - long : test/opt
+              opt  : bool
+        '''
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+        assert False
+    except CmdLineException as e:
+        assert e.args[0] == "Specified option name 'test/opt' must be a valid Python identifier"
+
+
+def test_invalid_3():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - short: not-short
+              opt  : bool
+        '''
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+        assert False
+    except CmdLineException as e:
+        assert e.args[0] == "Invalid short key: 'not-short'"

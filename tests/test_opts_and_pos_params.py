@@ -37,7 +37,7 @@ def test_options_and_positional_params_1():
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt
     assert not TestCmdLine.b_opt
-    assert TestCmdLine.positional_params.params == ["THESE", "ARE", "POSITIONAL"]
+    assert TestCmdLine.positional_params == ["THESE", "ARE", "POSITIONAL"]
 
 
 def test_options_and_positional_params_2():
@@ -70,4 +70,4 @@ def test_options_and_positional_params_2():
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert not TestCmdLine.a_opt
     assert TestCmdLine.b_opt
-    assert TestCmdLine.positional_params.params == ["THESE", "ARE", "POSITIONAL", "--a-opt"]
+    assert TestCmdLine.positional_params == ["THESE", "ARE", "POSITIONAL", "--a-opt"]
