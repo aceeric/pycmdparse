@@ -1,9 +1,10 @@
 import datetime
 import re
 from abc import ABC, abstractmethod
-from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
-from pycmdparse.datatype_enum import DataTypeEnum
+
 from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.datatype_enum import DataTypeEnum
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 
 
 class AbstractOpt(ABC):
@@ -37,10 +38,10 @@ class AbstractOpt(ABC):
 
         Determining the option name: after an option is parsed, its value is injected into
         the CmdLine subclass running the arg parser. The Python identifier that is used to hold
-        the option value is the first non-null in  order from: opt_name, long_key, short_key.
+        the option value is the first non-null in order from: opt_name, long_key, short_key.
         So, to further abbreviate the yaml, if the option key is also a valid Python identifier,
-        then the name element of the option in the yaml can be omitted for an option. E.g. for
-        option '--verbose', the injected field name would be 'verbose'. For option '--file-name',
+        then the name element of the option in the yaml can be omitted. E.g. for option
+        '--verbose', the injected field name would be 'verbose'. For option '--file-name',
         it would be 'file_name' because dashes are converted to underlines by this process.
         The short-form is the lowest precedence. A field named 'v', for example, is legal, if not
         readable, but is supported. An invalid Python identifier raises an exception.
@@ -61,14 +62,14 @@ class AbstractOpt(ABC):
         self._data_type = data_type
         self._help_text = help_text
         self._value = None
-        if not required and default_value:  # test is true if not None and not empty :-)
+        if not required and default_value:
             # an optional param with a default is immediately considered initialized
             self._initialized = True
         else:
             # if required, ignore the default value because the option must be provided
             # on the command line or the arg parser will return a parse error
             self._initialized = False
-        self._supplied_key = None # they option actually encountered on the command line (e.g. "-f", or "--filename")
+        self._supplied_key = None  # the option actually encountered on the command line (e.g. "-f", or "--filename")
         self._from_cmdline = False
 
     def __repr__(self):
@@ -207,10 +208,24 @@ class AbstractOpt(ABC):
             return self._do_accept(stack)
         return OptAcceptResultEnum.IGNORED,
 
+    @abstractmethod
+    def do_final_validate(self):
+        """
+        After all command line args parsed, give options a chance to do final validation. Supports
+        scenario like "my-util -f VAL1 -f VAL2 -f VAL3. Now, the '-f' opt has three values. Is that
+        ok? Can't do the check until the entire command line has been parsed
+
+        :return: a tuple: element zero is an OptAcceptResultEnum value, element one is an
+        error message if element zero is OptAcceptResultEnum.ERROR
+        """
+        pass
+
     def _validate_datatype(self, value):
         """
         The the option has a data type (which is not required) then validates that the option
-        value matches the specified data type.
+        value matches the specified data type. Only very basic typing is supported: integers,
+        floating point, and a rudimentary date. Anything beyond that would need to be handled
+        by the utility.
 
         :param value: the option value to validate
 
@@ -223,14 +238,14 @@ class AbstractOpt(ABC):
                 return value
             try:
                 return int(value)
-            except:
+            except ValueError:
                 return None
         elif self._data_type is DataTypeEnum.DECIMAL:
             if isinstance(value, float):
                 return value
             try:
                 return float(value)
-            except:
+            except ValueError:
                 return None
         elif self._data_type is DataTypeEnum.DATE:
             if isinstance(value, datetime.date) or isinstance(value, datetime.datetime):
@@ -240,7 +255,7 @@ class AbstractOpt(ABC):
                     return value
             try:
                 return AbstractOpt._parse_date(value)
-            except:
+            except ValueError:
                 return None
         return None
 
@@ -280,16 +295,3 @@ class AbstractOpt(ABC):
         error message if element zero is OptAcceptResultEnum.ERROR
         """
         pass
-
-    @abstractmethod
-    def _do_final_validate(self):
-        """
-        After all command line args parsed, give options a chance to do final validation. Supports
-        scenario like "my-util -f VAL1 -f VAL2 -f VAL3. Now, the '-f' opt has three values. Is that
-        ok? Can't do the check until the entire command line has been parsed
-
-        :return: a tuple: element zero is an OptAcceptResultEnum value, element one is an
-        error message if element zero is OptAcceptResultEnum.ERROR
-        """
-        pass
-

@@ -11,6 +11,7 @@ from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 
@@ -59,7 +60,7 @@ def test_exactly_explicit_default_array_size_2():
         test_opt = None
     args = "util-name"
     try:
-        parse_result = TestCmdLine.parse(args)
+        TestCmdLine.parse(args)
     except CmdLineException as e:
         assert "Invalid defaults supplied" in e.args[0]
 
@@ -103,7 +104,7 @@ def test_exactly_explicit_no_count_default_array_size_3():
         test_opt = None
     args = "util-name"
     try:
-        parse_result = TestCmdLine.parse(args)
+        TestCmdLine.parse(args)
     except CmdLineException as e:
         assert "Invalid defaults supplied" in e.args[0]
 
@@ -656,7 +657,7 @@ def test_at_most_default_no_count_no_args_optional():
         test_opt = None
     args = "util-name"
     try:
-        parse_result = TestCmdLine.parse(args)
+        TestCmdLine.parse(args)
     except CmdLineException as e:
         assert "Invalid defaults supplied" in e.args[0]
 
@@ -699,7 +700,7 @@ def test_at_most_default_no_count_args_optional():
         test_opt = None
     args = "util-name --test-opt cmdline1 cmdline2"
     try:
-        parse_result = TestCmdLine.parse(args)
+        TestCmdLine.parse(args)
     except CmdLineException as e:
         assert "Invalid defaults supplied" in e.args[0]
 
@@ -949,6 +950,7 @@ def test_no_limit_no_count_no_default_args_optional():
     assert TestCmdLine.test_opt == ["cmdline1", "cmdline2"]
     
 # No limit with count specified (still ignored for no limit)
+
 
 def test_no_limit_default_count_no_args_required():
     """no limit, count, default provided, no cmdline args, required option"""

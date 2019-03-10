@@ -1,6 +1,6 @@
+from pycmdparse.abstract_opt import AbstractOpt
 from pycmdparse.datatype_enum import DataTypeEnum
 from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
-from pycmdparse.abstract_opt import AbstractOpt
 
 
 class BoolOpt(AbstractOpt):
@@ -48,5 +48,5 @@ class BoolOpt(AbstractOpt):
         self._from_cmdline = True
         return OptAcceptResultEnum.ACCEPTED,
 
-    def _do_final_validate(self):
+    def do_final_validate(self):
         return OptAcceptResultEnum.ACCEPTED,

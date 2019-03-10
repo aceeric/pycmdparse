@@ -8,6 +8,7 @@ from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 

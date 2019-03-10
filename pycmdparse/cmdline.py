@@ -1,15 +1,16 @@
 import yaml
 
-from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
-from pycmdparse.opt_factory import  OptFactory
-from pycmdparse.usage_example import UsageExample
+from pycmdparse.class_property import classproperty, classproperty_support
 from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.opt_category import OptCategory
+from pycmdparse.opt_factory import OptFactory
 from pycmdparse.parseresult_enum import ParseResultEnum
 from pycmdparse.positional_params import PositionalParams
 from pycmdparse.showinfo import ShowInfo
 from pycmdparse.splitter import Splitter
-from pycmdparse.class_property import classproperty, classproperty_support
+from pycmdparse.usage_example import UsageExample
+
 
 @classproperty_support
 class CmdLine:
@@ -89,6 +90,7 @@ class CmdLine:
     _parse_errors = None
     """Initialized by the parser with any errors encountered during command-line parsing"""
 
+    # noinspection PyMethodParameters
     @classproperty
     def parse_errors(cls):
         """
@@ -96,6 +98,7 @@ class CmdLine:
         """
         return cls._parse_errors
 
+    # noinspection PyMethodParameters
     @classproperty
     def positional_params(cls):
         """
@@ -244,7 +247,7 @@ class CmdLine:
             return ParseResultEnum.PARSE_ERROR
 
         for supported_option in flattened_options:
-            accept_result = supported_option._do_final_validate()
+            accept_result = supported_option.do_final_validate()
             if accept_result[0] is OptAcceptResultEnum.ERROR:
                 cls._append_error(accept_result[1])
                 return ParseResultEnum.PARSE_ERROR

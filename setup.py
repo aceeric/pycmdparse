@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 NAME = 'pycmdparse'
 VERSION = '1.0.0'
@@ -25,7 +25,7 @@ LICENSE = "Public Domain"
 PLATFORMS = "Any"
 URL = "https://github.com/aceeric/pycmdparse"
 DOWNLOAD_URL = "TBD"
-KEYWORKDS="arg argument parse commandline command line usage instructions console utility"
+KEYWORKDS = "arg argument parse commandline command line usage instructions console utility"
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -38,10 +38,10 @@ CLASSIFIERS = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Processing :: Markup",
 ]
-PACKAGES=['pycmdparse']
-REQUIRES=['PyYAML==5.1b3']
-PYTHON_REQUIRES='>=3.6'
-TESTS_REQUIRE=["pytest"]
+PACKAGES = ['pycmdparse']
+REQUIRES = ['PyYAML==5.1b3']
+PYTHON_REQUIRES = '>=3.6'
+TESTS_REQUIRE = ["pytest"]
 setup(
     name=NAME,
     version=VERSION,

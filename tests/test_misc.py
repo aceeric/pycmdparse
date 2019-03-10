@@ -2,6 +2,7 @@ from pycmdparse.cmdline import CmdLine
 from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 
@@ -120,7 +121,7 @@ def test_empty_1():
         pass
     args = "util-name -v"
     parse_result = TestCmdLine.parse(args)
-    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value # no yaml no parsing
+    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value  # no yaml no parsing
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['-v']"
 
 

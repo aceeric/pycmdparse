@@ -1,5 +1,5 @@
-from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.bool_opt import BoolOpt
+from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.datatype_enum import DataTypeEnum
 from pycmdparse.multitype_enum import MultiTypeEnum
 from pycmdparse.param_opt import ParamOpt
@@ -12,7 +12,7 @@ class OptFactory:
     """
 
     OPT_KEY = "opt"
-    """The yaml for an option must include this entry, specifying the option type"""
+    """The yaml for an option can include this entry, specifying the option type"""
 
     BOOL_OPT = "bool"
     """A boolean option - an option that doesn't take a parameter"""
@@ -48,7 +48,6 @@ class OptFactory:
             return OptFactory._new_option(option_type, opt_dict)
         else:
             raise CmdLineException("Unknown option type: {}".format(option_type))
-
 
     @staticmethod
     def _new_option(opt_type, opt_dict):

@@ -27,13 +27,12 @@ For no-limit options, these can repeat indefinitely:
 my-utility --no-limit ONE --no-limit TWO THREE --no-limit FOUR FIVE SIX ...
 
 No user would do this, of course. Well...
-
 """
 from pycmdparse.cmdline import CmdLine
-from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 
@@ -87,7 +86,6 @@ def test_exactly_one_opt_repeating():
 
 def test_exactly_one_opt_not_repeating():
     """Same as the test above with a different (equivalent) comand line"""
-    ## TODO should emanate the same error!
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:

@@ -5,6 +5,7 @@ and https://stackoverflow.com/users/941102/michael-reinhardt
 """
 
 
+# noinspection PyPep8Naming
 class classproperty:
     """
     Same as property(), but passes obj.__class__ instead of obj to fget/fset/fdel.
@@ -46,6 +47,7 @@ class classproperty:
         return type(self)(self.fget, self.fset, fdel, self.__doc__)
 
 
+# noinspection PyPep8Naming
 def classproperty_support(cls):
     """
     Class decorator to add metaclass to our class.

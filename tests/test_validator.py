@@ -1,10 +1,11 @@
-from pycmdparse.cmdline import CmdLine
-from pycmdparse.parseresult_enum import ParseResultEnum
 from pycmdparse.abstract_opt import AbstractOpt
+from pycmdparse.cmdline import CmdLine
 from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
+from pycmdparse.parseresult_enum import ParseResultEnum
 from pycmdparse.positional_params import PositionalParams
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 

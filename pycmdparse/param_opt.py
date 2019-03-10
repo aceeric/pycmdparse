@@ -1,7 +1,7 @@
-from pycmdparse.multitype_enum import MultiTypeEnum
-from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.abstract_opt import AbstractOpt
 from pycmdparse.cmdline_exception import CmdLineException
+from pycmdparse.multitype_enum import MultiTypeEnum
+from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 
 
 class ParamOpt(AbstractOpt):
@@ -132,7 +132,7 @@ class ParamOpt(AbstractOpt):
                 values[i] = tmp
         return True
 
-    def _do_final_validate(self):
+    def do_final_validate(self):
         """
         Handle data type conversion, and param count verification since options can be
         provided multiple times on the command line. E.g. "-f A -f B -f C" is the same

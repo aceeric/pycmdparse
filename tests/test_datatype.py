@@ -4,6 +4,7 @@ from pycmdparse.cmdline import CmdLine
 from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 
@@ -184,6 +185,7 @@ def test_multi_param_opt_1():
                                  datetime.datetime.strptime("2019-01-01", "%Y-%m-%d").date()]
     assert TestCmdLine.c_opt == [456.78, 901.23]
 
+
 def test_multi_param_opt_2():
     """
     Test param option type - one for each data type:
@@ -231,6 +233,7 @@ def test_multi_param_opt_2():
     assert TestCmdLine.b_opt == [datetime.datetime.strptime("2019-12-31", "%Y-%m-%d").date(),
                                  datetime.datetime.strptime("2016-04-05", "%Y-%m-%d").date()]
     assert TestCmdLine.c_opt == [111.222, 333.444]
+
 
 def test_multi_param_opt_invalid():
     """
@@ -311,4 +314,4 @@ def test_positional_params():
     args = "util-name -NO --OPTIONS SO -- ALL POSITIONAL"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
+    assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]

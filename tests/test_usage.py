@@ -4,9 +4,9 @@ defined in the yaml. Doesn't validate usage. Just want to make
 sure the parser isn't real easy to crash.
 """
 from pycmdparse.cmdline import CmdLine
-from pycmdparse.parseresult_enum import ParseResultEnum
 
 
+# noinspection PyUnusedLocal
 def setup_function(function):
     CmdLine.reset()
 
