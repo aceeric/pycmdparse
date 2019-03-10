@@ -39,7 +39,7 @@ def test_param_opt_validator():
 
         a_opt = None
 
-    args = "-a REJECTED"
+    args = "util-name -a REJECTED"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert TestCmdLine.parse_errors[0] == "Invalid value: REJECTED"
@@ -77,7 +77,7 @@ def test_positional_param_validator():
 
         a_opt = None
 
-    args = "-a -- P1 P2 P3 P4"
+    args = "util-name -a -- P1 P2 P3 P4"
     parse_result = TestCmdLine.parse(args)
     assert len(TestCmdLine.positional_params.params) == 4
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value

@@ -8,26 +8,26 @@ class ShowInfo:
     Displays errors and usage instructions to the console.
     """
     @staticmethod
-    def show_errors(parse_errors, program_name):
+    def show_errors(parse_errors, utility_name):
         """
         Displays all passed errors to the console.
 
         :param parse_errors: a List of strings, each of which is ostensibly an error message
-        :param program_name: the name of the program utilizing the pycmdparse package
+        :param utility_name: the name of the program utilizing the pycmdparse package
         """
         print("\nError{}:\n".format("(s)" if len(parse_errors) > 1 else ""))
         for parse_error in parse_errors:
             print(parse_error)
-        if program_name is not None:
-            print("\nFor usage instructions, try: {0} -h (or {0} --help)\n".format(program_name))
+        if utility_name is not None:
+            print("\nFor usage instructions, try: {0} -h (or {0} --help)\n".format(utility_name))
 
     @staticmethod
-    def show_usage(program_name, summary, usage, supported_options, details, examples, positional_params, addendum):
+    def show_usage(utility_name, summary, usage, supported_options, details, examples, positional_params, addendum):
         """
         Displays comprehensive usage instructions, as defined by the function arguments. Only those
         components that are provided as non-empty are displayed. Others are ignored.
 
-        :param program_name: the program name
+        :param utility_name: the program name
         :param summary: a summary description of what the program does
         :param usage: Abbreviated 'quick-start' usage guidance
         :param supported_options: a list of OptCategory objects defining the valid command-line options
@@ -41,8 +41,8 @@ class ShowInfo:
         max_len, ignore = shutil.get_terminal_size()
 
         # program name
-        if program_name is not None:
-            print("\n" + program_name + "\n" + "=" * len(program_name))
+        if utility_name is not None:
+            print("\n" + utility_name + "\n" + "=" * len(utility_name))
 
         # summary
         if summary is not None:
@@ -55,7 +55,7 @@ class ShowInfo:
             for line in Util.split_string(usage, max_len):
                 print(line)
         else:
-            ShowInfo._generate_usage(program_name, supported_options, positional_params, max_len)
+            ShowInfo._generate_usage(utility_name, supported_options, positional_params, max_len)
 
         # positional params
         if positional_params is not None and positional_params.help_text is not None:
@@ -93,26 +93,33 @@ class ShowInfo:
                 print(line)
 
     @staticmethod
-    def _generate_usage(program_name, supported_options, positional_params, max_len):
+    def _generate_usage(utility_name, supported_options, positional_params, max_len):
+        """
+        Generates abbreviated usage by listing all the options, then the positional
+        params 'text' field.
+
+        :param utility_name: the utility name using pycmdparse
+        :param supported_options: the defined options and parameters from the yaml
+        :param positional_params: " positional params
+        :param max_len: max console width
+        """
         print("Usage:\n")
-        program_name = program_name + " " if program_name is not None else ""
-        line = program_name
+        utility_name = utility_name + " " if utility_name is not None else ""
+        line = utility_name
         for category in supported_options:
             for option in category.options:
                 k = "[" + option.keys_and_hint + "]"
                 if len(line) + len(k) > max_len:
                     print(line)
-                    line = ShowInfo._fixed(" ", len(program_name))
+                    line = ShowInfo._fixed(" ", len(utility_name))
                 line += k + " "
-        if len(line.strip()) > 0:
-            print(line)
-        line = ShowInfo._fixed(" ", len(program_name))
+
         if positional_params is not None:
             param_text = positional_params.param_text
             for word in param_text.split():
                 if len(line) + len(word) > max_len:
                     print(line)
-                    line = ShowInfo._fixed(" ", len(program_name))
+                    line = ShowInfo._fixed(" ", len(utility_name))
                 line += word + " "
         if len(line.strip()) > 0:
             print(line)

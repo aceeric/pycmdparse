@@ -3,6 +3,7 @@ import re
 from abc import ABC, abstractmethod
 from pycmdparse.opt_acceptresult_enum import OptAcceptResultEnum
 from pycmdparse.datatype_enum import DataTypeEnum
+from pycmdparse.cmdline_exception import CmdLineException
 
 
 class AbstractOpt(ABC):
@@ -17,10 +18,8 @@ class AbstractOpt(ABC):
         Instance initializer for an option. Sets instance fields from passed values and performs
         some basic state initialization.
 
-        :param opt_name: this is a valid Python identifier for the option. Once the parse
-        process completes, this name will be used by the parser to inject a field - having
-        this name - into the utility's CmdLine subclass, which can then be used to access
-        the option value from the command line.
+        :param opt_name: this is a valid Python identifier for the option. See 'Determining
+        the option name' further down.
         :param short_key: E.g. "v", for "-v"
         :param long_key: E.g. "verbose", for "--verbose"
         :param opt_hint: For options accepting params, a mnemonic for the user that is
@@ -35,8 +34,24 @@ class AbstractOpt(ABC):
         :param data_type: Supports rudimentary data type validation. Expects a DataTypeEnum
         object
         :param help_text: Help text for the option
+
+        Determining the option name: after an option is parsed, its value is injected into
+        the CmdLine subclass running the arg parser. The Python identifier that is used to hold
+        the option value is the first non-null in  order from: opt_name, long_key, short_key.
+        So, to further abbreviate the yaml, if the option key is also a valid Python identifier,
+        then the name element of the option in the yaml can be omitted for an option. E.g. for
+        option '--verbose', the injected field name would be 'verbose'. For option '--file-name',
+        it would be 'file_name' because dashes are converted to underlines by this process.
+        The short-form is the lowest precedence. A field named 'v', for example, is legal, if not
+        readable, but is supported. An invalid Python identifier raises an exception.
+
         """
-        self._opt_name = opt_name
+        self._opt_name = next(el for el in [opt_name, long_key, short_key] if el is not None)
+        if self._opt_name is None:
+            raise CmdLineException("No valid option name from: {}".format([opt_name, long_key, short_key]))
+        self._opt_name = self._opt_name.replace('-', '_')
+        if short_key is not None and len(short_key) != 1:
+            raise CmdLineException("Invalid short key: {}".format(short_key))
         self._short_key = short_key
         self._long_key = long_key
         self._opt_hint = opt_hint
@@ -45,15 +60,16 @@ class AbstractOpt(ABC):
         self._default_value = default_value
         self._data_type = data_type
         self._help_text = help_text
-        if not required and default_value is not None:
+        self._value = None
+        if not required and default_value:  # test is true if not None and not empty :-)
+            # an optional param with a default is immediately considered initialized
             self._initialized = True
-            self._value = default_value
         else:
             # if required, ignore the default value because the option must be provide
             # on the command line or the arg parser will return a parse error
             self._initialized = False
-            self._value = None
         self._supplied_key = None # they option actually encountered on the command line (e.g. "-f", or "--filename")
+        self._from_cmdline = False
 
     def __repr__(self):
         s = "opt_name: {} short_key: {}; long_key: {}; value: {}; required: {}; hint: {}; is_internal: {}; "\
@@ -90,7 +106,7 @@ class AbstractOpt(ABC):
         if self.short_key is not None:
             s += "-" + self.short_key
         if self.long_key is not None:
-            s += "" if len(s) == 0 else ", "
+            s += "" if len(s) == 0 else ","
             s += "--" + self.long_key
         if self.opt_hint is not None:
             s += " <" + self.opt_hint + ">"
@@ -99,13 +115,19 @@ class AbstractOpt(ABC):
     @property
     def initialized(self):
         """
+        This property indicates whether an option has been assigned a value.
+
         For boolean options this is always true because boolean options are initialized to
         have a value of False, and then the value is set to True if the option is specified on
-        the command line. Therefore, boolean options are always initialized. Other options
-        behave differently: A mandatory option is initialized if supplied on the command
-        line. Otherwise it is not initialized. An non-mandatory option is initialized if
-        a default was specified in the yaml, or, the option and parameter was provided
-        on the command line.
+        the command line. So either way, a boolean is initialized.
+
+        Param options behave differently: A mandatory param option is initialized only if
+        supplied on the command line. Otherwise it is not initialized.
+
+        A non-mandatory option is initialized if a default was specified in the yaml, or,
+        the option and parameter was provided on the command line. The setup for this is
+        handled in the constructor. This getter just returns the result of that
+        adjudication.
         """
         return self._initialized
 
@@ -136,6 +158,10 @@ class AbstractOpt(ABC):
     @property
     def supplied_key(self):
         return self._supplied_key
+
+    @property
+    def from_cmdline(self):
+        return self._from_cmdline
 
     @property
     @abstractmethod
@@ -178,8 +204,6 @@ class AbstractOpt(ABC):
             # the philosophy of "prevent small problems")
             return OptAcceptResultEnum.IGNORED,
         if stack.peek().lstrip("-") in [self.short_key, self.long_key]:
-            if self.supplied_key is not None:
-                return OptAcceptResultEnum.ERROR, "Duplicate option specified on the command line: {}".format(stack.peek())
             return self._do_accept(stack)
         return OptAcceptResultEnum.IGNORED,
 
@@ -252,6 +276,18 @@ class AbstractOpt(ABC):
         :param stack: the command line stack. Subclass is expected to leave the stack ready for
         the next option to parse - meaning all tokens on the stack that belong to the option
         have been popped.
+
+        :return: a tuple: element zero is an OptAcceptResultEnum value, element one is an
+        error message if element zero is OptAcceptResultEnum.ERROR
+        """
+        pass
+
+    @abstractmethod
+    def _do_final_validate(self):
+        """
+        After all command line args parsed, give args a chance to do final validation. Supports
+        scenario like "mu-util -f VAL1 -f VAL2 -f VAL3. Now, the '-f' opt has three values. Is that
+        ok? We can't check until the entire command line has been parsed
 
         :return: a tuple: element zero is an OptAcceptResultEnum value, element one is an
         error message if element zero is OptAcceptResultEnum.ERROR

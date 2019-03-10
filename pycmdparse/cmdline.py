@@ -38,8 +38,11 @@ class CmdLine:
     element one is an error message to display to the user if element zero is 'ERROR'
     """
 
-    program_name = None
+    utility_name = None
     """The name of the program or utility that is importing the module"""
+
+    require_args = None
+    """True if the utility requires at least one command line arg"""
 
     summary = None
     """A very short summary that captures the key purpose of the utility"""
@@ -106,7 +109,8 @@ class CmdLine:
         cls.examples = None
         cls.usage = None
         cls.summary = None
-        cls.program_name = None
+        cls.utility_name = None
+        cls.require_args = None
         cls.parse_errors = None
         cls.yaml_def = None
 
@@ -145,9 +149,9 @@ class CmdLine:
         """
         if parse_result in [ParseResultEnum.PARSE_ERROR, ParseResultEnum.MISSING_MANDATORY_ARG]:
             if cls.parse_errors is not None and len(cls.parse_errors) > 0:
-                ShowInfo.show_errors(cls.parse_errors, cls.program_name)
+                ShowInfo.show_errors(cls.parse_errors, cls.utility_name)
         elif parse_result is ParseResultEnum.SHOW_USAGE:
-            ShowInfo.show_usage(cls.program_name, cls.summary, cls.usage, cls.supported_options,
+            ShowInfo.show_usage(cls.utility_name, cls.summary, cls.usage, cls.supported_options,
                                 cls.details, cls.examples, cls.positional_params, cls.addendum)
 
     @classmethod
@@ -155,12 +159,13 @@ class CmdLine:
         """
         Entry point for the class. Parses the yaml in the 'yaml_def' class field to initialize
         associated class fields, then parses the passed command line against the options defined
-        by the yaml. If all is successful then adds one field to the class for each option, and
-        initializes that field with the parameter specified on the command line for the
+        by the yaml. If all is successful then adds one field to the class for each defined option,
+        and initializes that field with the parameter specified on the command line for the
         option. (Or, for boolean options that don't take parameters, sets those values to True.)
 
         :param cmd_line: Can be a single string, which the function tokenizes and processes, or,
-        can be a list, like the Python interpreter provides.
+        can be a list, like the Python interpreter provides. The first element is expected to be
+        the invoking utility name. This element is ignored by the parser.
 
         :return: an ParseResultEnum, indicating the results of the command-line parse.
         """
@@ -172,6 +177,11 @@ class CmdLine:
             cmdline_stack = Splitter.split_list(cmd_line, has_options)
         else:
             raise CmdLineException("Can only parse a string, or a list")
+        if cmdline_stack.size() == 1 and cls.require_args:
+            # if there are no command line args, but the class wants them, then
+            # return SHOW USAGE
+            return ParseResultEnum.SHOW_USAGE
+        cmdline_stack.pop()  # discard - arg 0 is utility name
         return cls._parse(cmdline_stack)
 
     @classmethod
@@ -202,6 +212,7 @@ class CmdLine:
                     if not cmdline_stack.peek().startswith("-"):
                         if not cmdline_stack.has_options():
                             cls._handle_positional_params(cmdline_stack)
+                            break
                         else:
                             cls._append_error("Unsupported option: '{0}'".format(cmdline_stack.peek()))
                             return ParseResultEnum.PARSE_ERROR
@@ -216,8 +227,14 @@ class CmdLine:
             cls._handle_positional_params(cmdline_stack)
 
         if cmdline_stack.size() > 0:
-            cls._append_error("Don't understand: {0}".format(cmdline_stack.pop_all()))
+            cls._append_error("Arg parse error at: {0}".format(cmdline_stack.pop_all()))
             return ParseResultEnum.PARSE_ERROR
+
+        for supported_option in flattened_options:
+            accept_result = supported_option._do_final_validate()
+            if accept_result[0] is OptAcceptResultEnum.ERROR:
+                cls._append_error(accept_result[1])
+                return ParseResultEnum.PARSE_ERROR
 
         missing = [opt for opt in flattened_options if opt.required and not opt.initialized]
 
@@ -309,12 +326,17 @@ class CmdLine:
     def _init_from_yaml(cls):
         """
         Parses the yaml string in the class 'yaml_def' field, and initializes the following class
-        fields from the yaml: program_name, summary, usage, positional_params, supported_options,
+        fields from the yaml: utility, summary, usage, positional_params, supported_options,
         details, examples, and addendum. If the yaml is missing an entry, then the corresponding
         class field is set to None.
         """
         parsed = yaml.load(cls.yaml_def, Loader=yaml.FullLoader)
-        cls.program_name = parsed.get("program_name")
+        utility = parsed.get("utility")
+        if utility is not None:
+            cls.utility_name = utility.get("name")
+            cls.require_args = utility.get("require_args")
+            if not isinstance(cls.require_args, bool):
+                cls.require_args = False
         cls.summary = parsed.get("summary")
         cls.usage = parsed.get("usage")
         if parsed.get("positional_params") is not None:

@@ -36,9 +36,17 @@ class BoolOpt(AbstractOpt):
         "--truncate", etc.
 
         :param stack: the command line stack
-        :return: always returns OptAcceptResultEnum.ACCEPTED
+
+        :return: OptAcceptResultEnum.ACCEPTED if this arg has not already been processed.
+        Else returns OptAcceptResultEnum.ERROR
         """
 
+        if self._supplied_key is not None:
+            return OptAcceptResultEnum.ERROR, "Option {} already specified once".format(self._supplied_key)
         self._supplied_key = stack.pop()
         self._value = True
+        self._from_cmdline = True
+        return OptAcceptResultEnum.ACCEPTED,
+
+    def _do_final_validate(self):
         return OptAcceptResultEnum.ACCEPTED,

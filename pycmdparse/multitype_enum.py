@@ -1,9 +1,10 @@
 from enum import Enum
+from .cmdline_exception import CmdLineException
 
 
 class MultiTypeEnum(Enum):
     """
-    Defines the type of a MultiParamOpt option
+    Defines the type of a ParamOpt option
     """
 
     EXACTLY = 1,
@@ -16,7 +17,7 @@ class MultiTypeEnum(Enum):
     @staticmethod
     def fromstr(enum_str):
         if enum_str is None:
-            return None
+            return MultiTypeEnum.EXACTLY
         elif enum_str.lower() == "exactly":
             return MultiTypeEnum.EXACTLY
         elif enum_str.lower() == "at-most":
@@ -24,7 +25,7 @@ class MultiTypeEnum(Enum):
         elif enum_str.lower() == "no-limit":
             return MultiTypeEnum.NO_LIMIT
         else:
-            return None
+            raise CmdLineException("Unknown param type: {}".format(enum_str))
 
     def tostr(self):
         if self is MultiTypeEnum.EXACTLY:

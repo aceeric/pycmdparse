@@ -29,7 +29,7 @@ def test_bool_param_defaulted():
         a_opt = None
         b_opt = None
 
-    args = "--a-opt a-on-the-command-line"
+    args = "util-name --a-opt a-on-the-command-line"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, so has the value from the command line
@@ -41,7 +41,7 @@ def test_bool_param_defaulted():
 def test_multi_param_opt_defaulted():
     class TestCmdLine(CmdLine):
         """
-        Test multi-param option type with defaults - one provided and one not
+        Test param option type with defaults - one provided and one not
         """
         yaml_def = '''
             supported_options:
@@ -50,26 +50,26 @@ def test_multi_param_opt_defaulted():
                 - name      : a_opt
                   short     : a
                   long      : a-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
                 - name      : b_opt
                   short     : b
                   long      : b-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
                   default   : ["b-default-1", "b-default-2"]
                 - name      : c_opt
                   short     : c
                   long      : c-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
-                  # here the default is not provided as a list but the MultiParamOpt
+                  # here the default is not provided as a list but the ParamOpt
                   # will convert it to a list when it stores the default
                   default   : "c-default-1"
                 - name      : d_opt
                   short     : d
                   long      : d-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
                   # shows another way the default can be specified in the yaml
                   default:
@@ -82,7 +82,7 @@ def test_multi_param_opt_defaulted():
         c_opt = None
         d_opt = None
 
-    args = "--a-opt A1 A2 A3"
+    args = "util-name --a-opt A1 A2 A3"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, no limit, no subsequent options or positional params so gets everything
@@ -93,3 +93,30 @@ def test_multi_param_opt_defaulted():
     assert TestCmdLine.c_opt == ["c-default-1"]
     # a default specified differently in the yaml
     assert TestCmdLine.d_opt == ["D1", "D2", "D3"]
+
+
+def test_multi_param_opt_defaulted_and_cmdline():
+    class TestCmdLine(CmdLine):
+        """
+        Tests a param option type with defaults - and values from the command line.
+        The cmdline values should replace the defaults, not be appended
+        """
+        yaml_def = '''
+            supported_options:
+              - category:
+                options:
+                - name      : test_opt
+                  short     : t
+                  long      : test-opt
+                  opt       : param
+                  multi_type: no-limit
+                  default   :
+                  - DEFAULT1
+                  - DEFAULT2
+            '''
+        test_opt = None
+
+    args = "util-name --test-opt CMD1 CMD2 CMD3"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.SUCCESS.value
+    assert TestCmdLine.test_opt == ["CMD1", "CMD2", "CMD3"]  # not ["DEFAULT1", "DEFAULT2"]

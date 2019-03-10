@@ -1,7 +1,6 @@
 from pycmdparse.cmdline_exception import CmdLineException
 from pycmdparse.bool_opt import BoolOpt
 from pycmdparse.datatype_enum import DataTypeEnum
-from pycmdparse.multiparam_opt import MultiParamOpt
 from pycmdparse.multitype_enum import MultiTypeEnum
 from pycmdparse.param_opt import ParamOpt
 
@@ -17,10 +16,8 @@ class OptFactory:
     BOOL = "bool"
     """A boolean option - an option that doesn't take a parameter"""
     PARAM = "param"
-    """An option that takes exactly one parameter"""
-    MULTI_PARAM = "multiparam"
-    """An option that takes multile parameters"""
-    KNOWN_OPTION_TYPES = [BOOL, PARAM, MULTI_PARAM]
+    """An option that takes one or more parameters"""
+    KNOWN_OPTION_TYPES = [BOOL, PARAM]
     """The valid values that can be specified in the 'opt' dictionary entry in the yaml spec"""
 
     @staticmethod
@@ -72,11 +69,12 @@ class OptFactory:
 
         if opt_type == OptFactory.BOOL:
             return BoolOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, help_text)
-        elif opt_type == OptFactory.PARAM:
-            return ParamOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, default,
-                             data_type, help_text)
-        else:  # MULTI_PARAM
+        else:  # param
             multi_type = MultiTypeEnum.fromstr(opt_dict.get("multi_type"))
+            if multi_type is None:
+                multi_type = MultiTypeEnum.EXACTLY
             count = opt_dict.get("count")
-            return MultiParamOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, default,
-                                  multi_type, count, data_type, help_text)
+            if count is None and multi_type in [MultiTypeEnum.EXACTLY, MultiTypeEnum.AT_MOST]:
+                count = 1
+            return ParamOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, default,
+                            multi_type, count, data_type, help_text)

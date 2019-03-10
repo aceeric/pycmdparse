@@ -32,7 +32,7 @@ def test_concatenated_bools():
         b_opt = None
         c_opt = None
 
-    args = "-abc=foo"
+    args = "util-name -abc=foo"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, so True
@@ -64,7 +64,7 @@ def test_multi_param_opt_defaulted():
         foo_opt = None
         fro_opt = None
 
-    args = "--foo=bar --fro bozz"
+    args = "util-name --foo=bar --fro bozz"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, no limit, no subsequent options or positional params so gets everything
@@ -106,7 +106,7 @@ def test_multiple_cats():
         c_opt = None
         d_opt = None
 
-    args = "-a --b-opt -c --d-opt"
+    args = "util-name -a --b-opt -c --d-opt"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt

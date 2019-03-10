@@ -28,7 +28,7 @@ def test_bool_opt():
         verbose = None
         not_provided = None
 
-    args = "--verbose"
+    args = "util-name --verbose"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, so True
@@ -59,7 +59,7 @@ def test_param_opt():
         a_opt = None
         b_opt = None
 
-    args = "--b-opt=PASS"
+    args = "util-name --b-opt=PASS"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # not specified on the command line, so None
@@ -71,9 +71,8 @@ def test_param_opt():
 def test_multi_param_opt():
     class TestCmdLine(CmdLine):
         """
-        Test basic multi param: one equals, one at-most, and one no-limit with
-        args provided so each param gets a defined number of values. A multi-param
-        option is an option that can take multiple params
+        Test param: one equals, one at-most, and one no-limit with
+        args provided so each param gets a defined number of values
         """
         yaml_def = '''
             supported_options:
@@ -82,24 +81,24 @@ def test_multi_param_opt():
                 - name      : a_opt
                   short     : a
                   long      : a-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                 - name      : b_opt
                   short     : b
                   long      : b-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: at-most
                   count     : 4
                 - name      : c_opt
                   short     : c
                   long      : c-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
                 - name      : d_opt
                   short     : d
                   long      : d-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
             '''
         a_opt = None
@@ -107,7 +106,7 @@ def test_multi_param_opt():
         c_opt = None
         d_opt = None
 
-    args = "--a-opt A1 A2 -b B1 B2 --c-opt C1 C2 C3"
+    args = "util-name --a-opt A1 A2 -b B1 B2 --c-opt C1 C2 C3"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, exactly 2
@@ -137,7 +136,7 @@ def test_positional_params():
         a_opt = None
         b_opt = None
 
-    args = "-NO --OPTIONS SO -- ALL POSITIONAL"
+    args = "util-name -NO --OPTIONS SO -- ALL POSITIONAL"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.positional_params.params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]

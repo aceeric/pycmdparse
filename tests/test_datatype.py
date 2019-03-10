@@ -39,7 +39,7 @@ def test_param_opt_1():
         b_opt = None
         c_opt = None
 
-    args = "-a 123 -b 2019-12-31 -c 456.78"
+    args = "util-name -a 123 -b 2019-12-31 -c 456.78"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == 123
@@ -63,7 +63,7 @@ def test_param_opt_2():
                   long    : a-opt
                   opt     : param
                   datatype: int
-                  default : 123
+                  default : '123'
                 - name    : b_opt
                   short   : b
                   long    : b-opt
@@ -81,7 +81,7 @@ def test_param_opt_2():
         b_opt = None
         c_opt = None
 
-    args = ""
+    args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == 123
@@ -121,19 +121,19 @@ def test_param_opt_invalid():
         b_opt = None
         c_opt = None
 
-    args = "-a 123.34"  # expects int
+    args = "util-name -a 123.34"  # expects int
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert "has incorrect data type" in TestCmdLine.parse_errors[0]
 
     CmdLine.reset()
-    args = "-b notadate"  # expects date
+    args = "util-name -b notadate"  # expects date
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert "has incorrect data type" in TestCmdLine.parse_errors[0]
 
     CmdLine.reset()
-    args = "-c 2019-12-31"  # expects decimal
+    args = "util-name -c 2019-12-31"  # expects decimal
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert "has incorrect data type" in TestCmdLine.parse_errors[0]
@@ -141,7 +141,7 @@ def test_param_opt_invalid():
 
 def test_multi_param_opt_1():
     """
-    Test multi-param option type - one for each data type:
+    Test param option type - one for each data type:
     - valid data types
     - supplied on the command line
     """
@@ -153,21 +153,21 @@ def test_multi_param_opt_1():
                 - name      : a_opt
                   short     : a
                   long      : a-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : int
                 - name      : b_opt
                   short     : b
                   long      : b-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : date
                 - name      : c_opt
                   short     : c
                   long      : c-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : decimal
@@ -176,7 +176,7 @@ def test_multi_param_opt_1():
         b_opt = None
         c_opt = None
 
-    args = "-a 123 456 -b 2019-12-31 01-01-2019 -c 456.78 901.23"
+    args = "util-name -a 123 456 -b 2019-12-31 01-01-2019 -c 456.78 901.23"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == [123, 456]
@@ -186,7 +186,7 @@ def test_multi_param_opt_1():
 
 def test_multi_param_opt_2():
     """
-    Test multi-param option type - one for each data type:
+    Test param option type - one for each data type:
     - valid data types
     - not supplied on the command line (but has yaml-defined defaults)
     """
@@ -198,7 +198,7 @@ def test_multi_param_opt_2():
                 - name      : a_opt
                   short     : a
                   long      : a-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : int
@@ -206,7 +206,7 @@ def test_multi_param_opt_2():
                 - name      : b_opt
                   short     : b
                   long      : b-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : date
@@ -214,7 +214,7 @@ def test_multi_param_opt_2():
                 - name      : c_opt
                   short     : c
                   long      : c-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                   datatype  : decimal
@@ -224,7 +224,7 @@ def test_multi_param_opt_2():
         b_opt = None
         c_opt = None
 
-    args = ""
+    args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == [888, 777]
@@ -234,7 +234,7 @@ def test_multi_param_opt_2():
 
 def test_multi_param_opt_invalid():
     """
-    Test multi-param option type - one for each data type:
+    Test param option type - one for each data type:
     - invalid data types
     - supplied on the command line
     - should emanate a parse error for each
@@ -255,24 +255,24 @@ def test_multi_param_opt():
                 - name      : a_opt
                   short     : a
                   long      : a-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: exactly
                   count     : 2
                 - name      : b_opt
                   short     : b
                   long      : b-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: at-most
                   count     : 4
                 - name      : c_opt
                   short     : c
                   long      : c-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
                 - name      : d_opt
                   short     : d
                   long      : d-opt
-                  opt       : multiparam
+                  opt       : param
                   multi_type: no-limit
             '''
         a_opt = None
@@ -280,7 +280,7 @@ def test_multi_param_opt():
         c_opt = None
         d_opt = None
 
-    args = "--a-opt A1 A2 -b B1 B2 --c-opt C1 C2 C3"
+    args = "util-name --a-opt A1 A2 -b B1 B2 --c-opt C1 C2 C3"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # specified on the command line, exactly 2
@@ -308,7 +308,7 @@ def test_positional_params():
         a_opt = None
         b_opt = None
 
-    args = "-NO --OPTIONS SO -- ALL POSITIONAL"
+    args = "util-name -NO --OPTIONS SO -- ALL POSITIONAL"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.positional_params.params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
