@@ -121,15 +121,15 @@ class MyCmdLine(CmdLine):
     # The 'supported_options' entry defines the options and associated params for the utility.
     # If this entry exists, then option parsing occurs. Otherwise, no option parsing
     # occurs. All options provide a single-character (short) form, and a long form.
-    # Example: '-t', and '--timeout'. Options are case-sensitive. There are three types
+    # Example: '-t', and '--timeout'. Options are case-sensitive. There are two types
     # of options:
     #
-    # An example of a 'boolean' is: '--verbose'. It is false by default, and only True if provided
+    # An example of a 'bool' is: '--verbose'. It is False by default, and only True if provided
     # on the command line. It is always optional, since it always has a value.
     #
     # A 'param' option is an option taking one or more params, like '--filelist FILE1 FILE2 FILE3',
     # or '--file FILE'. A param option's parameters are terminated differently depending on the
-    # param type. More details are provided below, and, in the docstring of the Param
+    # param type. More details are provided below, and, in the docstring of the ParamOpt class
     #
     # Param options are either required, or not required. Required options that are not provided
     # on the command line cause a parse error. Non-required options can have a default
@@ -192,7 +192,7 @@ class MyCmdLine(CmdLine):
           help: >
             Specifies the recursion level of the search. If not specified on the command line, then
             a default value of one (1) is used. Increasing the recursion level can provide a better analysis
-            result, but can significantly increase the processing time. The max value is 100.
+            result, but can significantly increase the processing time. The max value is 92.
         - name      : exclude
           short     : e
           long      : exclude
