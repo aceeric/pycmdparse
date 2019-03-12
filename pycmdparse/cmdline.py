@@ -194,11 +194,12 @@ class CmdLine:
         elif type(cmd_line) is list:
             cmdline_stack = Splitter.split_list(cmd_line, has_options)
         else:
-            raise CmdLineException("Can only parse a string, or a list")
+            raise CmdLineException("Can only parse a string or a list")
         if cmdline_stack.size() == 1 and cls._require_args:
             # if there are no command line args, but the class wants them, then
-            # return SHOW USAGE
-            return ParseResultEnum.SHOW_USAGE
+            # return SHOW PARSE_ERROR
+            cls._append_error("At least one option or param is required")
+            return ParseResultEnum.PARSE_ERROR
         cmdline_stack.pop()  # discard - arg 0 is utility name
         return cls._parse(cmdline_stack)
 

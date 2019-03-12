@@ -27,11 +27,3 @@ class MultiTypeEnum(Enum):
             return MultiTypeEnum.NO_LIMIT
         else:
             raise CmdLineException("Unknown param type: {}".format(enum_str))
-
-    def tostr(self):
-        if self is MultiTypeEnum.EXACTLY:
-            return "exactly"
-        elif self is MultiTypeEnum.AT_MOST:
-            return "at-most"
-        elif self is MultiTypeEnum.NO_LIMIT:
-            return "no-limit"

@@ -80,7 +80,7 @@ class Splitter:
         :return: A list as described
         """
         if len(element) <= 1:
-            raise CmdLineException("Invalid: " + element)
+            raise CmdLineException("Invalid option: '{}'".format(element))
         tokens = []
         for i in range(1, len(element)):
             if element[i: i + 1] == "=":

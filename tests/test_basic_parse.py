@@ -137,7 +137,8 @@ def test_positional_params():
         a_opt = None
         b_opt = None
 
-    args = "util-name -NO --OPTIONS SO -- ALL POSITIONAL"
+    # pass like sys.argv to exercise that code path
+    args = ["util-name", "-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]

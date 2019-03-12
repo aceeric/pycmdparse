@@ -10,6 +10,7 @@ pyyaml = {path = ".",editable = true}
 pyyaml = {path = ".",editable = true}
 pytest = "*"
 pycmdparse = {version = "*",editable = true}
+pytest-cov = "*"
 
 [requires]
 python_version = "3.6"
