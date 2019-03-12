@@ -10,7 +10,10 @@ class DataTypeEnum(Enum):
     DECIMAL = 2,
     """numeric value with a decimal point (e.g. 1.2)"""
     DATE = 3
-    """date (two formats are supported: YYYY MM DD and MM DD YYYY with dot, slash, or dash as separators"""
+    """
+    date (two formats are supported: YYYY MM DD and MM DD YYYY
+    with dot, slash, or dash as separators
+    """
     BOOL = 4
     """True/False (the data type for all bool options)"""
 

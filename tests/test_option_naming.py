@@ -189,7 +189,8 @@ def test_invalid_2():
         TestCmdLine.parse(args)
         assert False
     except CmdLineException as e:
-        assert e.args[0] == "Specified option name 'test/opt' must be a valid Python identifier"
+        assert e.args[0] == "Specified option name 'test/opt' must be a " \
+                            "valid Python identifier"
 
 
 def test_invalid_3():

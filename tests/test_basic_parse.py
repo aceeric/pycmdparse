@@ -114,7 +114,8 @@ def test_multi_param_opt():
     assert TestCmdLine.a_opt == ["A1", "A2"]
     # specified on the command line, at most 4 but terminated by --c-opt
     assert TestCmdLine.b_opt == ["B1", "B2"]
-    # specified on the command line, no limit so pulls all remaining tokens because no positional params
+    # specified on the command line, no limit so pulls all remaining tokens
+    # because no positional params
     assert TestCmdLine.c_opt == ["C1", "C2", "C3"]
     # not specified on the command line, so empty list
     assert TestCmdLine.d_opt == []
@@ -141,4 +142,5 @@ def test_positional_params():
     args = ["util-name", "-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
+    assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO",
+                                             "--", "ALL", "POSITIONAL"]

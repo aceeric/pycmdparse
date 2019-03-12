@@ -45,13 +45,15 @@ class MyCmdLine(CmdLine):
         - short   : z
           long    : tbd-2
           help: >
-            This shows the minimum requirement to define a parseable option. The injected
-            name is derived from the long key if available, else the short key. The key
-            is converted to a Python identifier by replacing dashes with underscores. If a
-            valid identifier, it is used, otherwise an error is thrown. Since the option
-            type ('opt') is omitted, pycmdparse defines it as a param option taking exactly
-            one parameter. As defined above, the command line arg would be: '--tbd-2 xyz',
-            or -z xyz'. And the injected field name would be 'tbd_2'.
+            This shows the minimum requirement to define a parseable option.
+            The injected name is derived from the long key if available, else
+            the short key. The key is converted to a Python identifier by
+            replacing dashes with underscores. If a valid identifier, it is
+            used, otherwise an error is thrown. Since the option type ('opt')
+            is omitted, pycmdparse defines it as a param option taking exactly
+            one parameter. As defined above, the command line arg would be:
+            '--tbd-2 xyz', or -z xyz'. And the injected field name would be
+            'tbd_2'.
 
     details: >
       TBD

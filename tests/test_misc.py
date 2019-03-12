@@ -69,7 +69,8 @@ def test_multi_param_opt_defaulted():
     args = "util-name --foo=bar --fro bozz"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    # specified on the command line, no limit, no subsequent options or positional params so gets everything
+    # specified on the command line, no limit, no subsequent options or
+    # positional params so gets everything
     assert TestCmdLine.foo_opt == "bar"
     # not specified on the command line, so gets the default
     assert TestCmdLine.fro_opt == "bozz"
@@ -122,7 +123,7 @@ def test_empty_1():
         pass
     args = "util-name -v"
     parse_result = TestCmdLine.parse(args)
-    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value  # no yaml no parsing
+    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value  # no yaml no parse
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['-v']"
 
 

@@ -64,9 +64,10 @@ def test_exactly_three_opt_repeating():
 
 def test_exactly_one_opt_repeating():
     """Tests exactly one (because both type and count are omitted, hence default to
-    'exactly one'. In this case, -opt FIRST -opt SECOND is the same as -opt FIRST SECOND
-    and in this case, FIRST is consumed, satisfying the option, and then the parser
-    tries to parse SECOND, this it doesn't know anything about and so it is a parse error."""
+    'exactly one'. In this case, -opt FIRST -opt SECOND is the same as -opt FIRST
+    SECOND and in this case, FIRST is consumed, satisfying the option, and then the
+    parser tries to parse SECOND, this it doesn't know anything about and so it is
+    a parse error."""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:

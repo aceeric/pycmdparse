@@ -20,8 +20,8 @@ def setup_function(function):
 
 
 def test_exactly_explicit_default_array_size_1():
-    """Tests the the default can be passed as an array for an exact 1 as long as there is only
-    one element in the default array"""
+    """Tests the the default can be passed as an array for an exact 1 as long as
+    there is only one element in the default array"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -43,7 +43,8 @@ def test_exactly_explicit_default_array_size_1():
 
 
 def test_exactly_explicit_default_array_size_2():
-    """Tests that an attempt to set a default for an exact 1 with a >1 array is disallowed"""
+    """Tests that an attempt to set a default for an exact 1 with a >1 array is
+     disallowed"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -112,7 +113,8 @@ def test_exactly_explicit_no_count_default_array_size_3():
 
 
 def test_exactly_explicit_default_no_args_required():
-    """exact count, explicitly specified, default provided, no cmdline args, required option"""
+    """exact count, explicitly specified, default provided, no cmdline args,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -133,7 +135,8 @@ def test_exactly_explicit_default_no_args_required():
 
 
 def test_exactly_explicit_default_no_args_optional():
-    """exact count, explicitly specified, default provided, no cmdline args, optional option"""
+    """exact count, explicitly specified, default provided, no cmdline args,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -155,7 +158,8 @@ def test_exactly_explicit_default_no_args_optional():
 
 
 def test_exactly_explicit_default_args_required():
-    """exact count, explicitly specified, default provided, cmdline args provided, required option"""
+    """exact count, explicitly specified, default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -177,7 +181,8 @@ def test_exactly_explicit_default_args_required():
 
 
 def test_exactly_explicit_default_args_optional():
-    """exact count, explicitly specified, default provided, cmdline args provided, optional option"""
+    """exact count, explicitly specified, default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -199,7 +204,8 @@ def test_exactly_explicit_default_args_optional():
 
 
 def test_exactly_explicit_no_default_no_args_required():
-    """exact count, explicitly specified, no default provided, no cmdline args, required option"""
+    """exact count, explicitly specified, no default provided, no cmdline args,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -219,7 +225,8 @@ def test_exactly_explicit_no_default_no_args_required():
 
 
 def test_exactly_explicit_no_default_no_args_optional():
-    """exact count, explicitly specified, no default provided, no cmdline args, optional option"""
+    """exact count, explicitly specified, no default provided, no cmdline args,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -240,7 +247,8 @@ def test_exactly_explicit_no_default_no_args_optional():
 
 
 def test_exactly_explicit_no_default_args_required():
-    """exact count, explicitly specified, no default provided, cmdline args provided, required option"""
+    """exact count, explicitly specified, no default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -261,7 +269,8 @@ def test_exactly_explicit_no_default_args_required():
 
 
 def test_exactly_explicit_no_default_args_optional():
-    """exact count, explicitly specified, no default provided, cmdline args provided, optional option"""
+    """exact count, explicitly specified, no default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -291,7 +300,8 @@ def test_exactly_explicit_no_default_args_optional():
 
 
 def test_exactly_implicit_default_no_args_required():
-    """exact count, implicitly specified, default provided, no cmdline args, required option"""
+    """exact count, implicitly specified, default provided, no cmdline args,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -310,7 +320,8 @@ def test_exactly_implicit_default_no_args_required():
 
 
 def test_exactly_implicit_default_no_args_optional():
-    """exact count, implicitly specified, default provided, no cmdline args, optional option"""
+    """exact count, implicitly specified, default provided, no cmdline args,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -330,7 +341,8 @@ def test_exactly_implicit_default_no_args_optional():
 
 
 def test_exactly_implicit_default_args_required():
-    """exact count, implicitly specified, default provided, cmdline args provided, required option"""
+    """exact count, implicitly specified, default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -350,7 +362,8 @@ def test_exactly_implicit_default_args_required():
 
 
 def test_exactly_implicit_default_args_optional():
-    """exact count, implicitly specified, default provided, cmdline args provided, optional option"""
+    """exact count, implicitly specified, default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -370,7 +383,8 @@ def test_exactly_implicit_default_args_optional():
 
 
 def test_exactly_implicit_no_default_no_args_required():
-    """exact count, implicitly specified, no default provided, no cmdline args, required option"""
+    """exact count, implicitly specified, no default provided, no cmdline args,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -388,7 +402,8 @@ def test_exactly_implicit_no_default_no_args_required():
 
 
 def test_exactly_implicit_no_default_no_args_optional():
-    """exact count, implicitly specified, no default provided, no cmdline args, optional option"""
+    """exact count, implicitly specified, no default provided, no cmdline args,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -407,7 +422,8 @@ def test_exactly_implicit_no_default_no_args_optional():
 
 
 def test_exactly_implicit_no_default_args_required():
-    """exact count, implicitly specified, no default provided, cmdline args provided, required option"""
+    """exact count, implicitly specified, no default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -426,7 +442,8 @@ def test_exactly_implicit_no_default_args_required():
 
 
 def test_exactly_implicit_no_default_args_optional():
-    """exact count, implicitly specified, no default provided, cmdline args provided, optional option"""
+    """exact count, implicitly specified, no default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -745,7 +762,8 @@ def test_at_most_no_count_no_default_no_args_optional():
 
 
 def test_at_most_no_count_no_default_args_required():
-    """at most, no count, no default provided, cmdline args provided, required option"""
+    """at most, no count, no default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -765,7 +783,8 @@ def test_at_most_no_count_no_default_args_required():
 
 
 def test_at_most_no_count_no_default_args_optional():
-    """at most, no count, no default provided, cmdline args provided, optional option"""
+    """at most, no count, no default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -911,7 +930,8 @@ def test_no_limit_no_count_no_default_no_args_optional():
 
 
 def test_no_limit_no_count_no_default_args_required():
-    """no limit, no count, no default provided, cmdline args provided, required option"""
+    """no limit, no count, no default provided, cmdline args provided,
+     required option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -931,7 +951,8 @@ def test_no_limit_no_count_no_default_args_required():
 
 
 def test_no_limit_no_count_no_default_args_optional():
-    """no limit, no count, no default provided, cmdline args provided, optional option"""
+    """no limit, no count, no default provided, cmdline args provided,
+     optional option"""
     class TestCmdLine(CmdLine):
         yaml_def = '''
         supported_options:
@@ -948,7 +969,7 @@ def test_no_limit_no_count_no_default_args_optional():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.test_opt == ["cmdline1", "cmdline2"]
-    
+
 # No limit with count specified (still ignored for no limit)
 
 

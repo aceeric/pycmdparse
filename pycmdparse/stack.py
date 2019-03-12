@@ -1,17 +1,16 @@
 class Stack:
     """
-    A simple stack with some additional functionality that supports
-    command-line parsing. A stack provides an intuitive way to parse
-    the command line.
+    A simple stack with some additional functionality that supports command-line
+    parsing. A stack provides an intuitive way to parse the command line.
     """
     def __init__(self, items):
         """
-        Initializes the stack from the passed List such that the
-        left-most list item is the top of the stack, and the right-most
-        list item is the bottom of the stack
+        Initializes the stack from the passed List such that the left-most list
+        item is the top of the stack, and the right-most list item is the bottom of the
+        stack
 
-        :param items: the List to initialize the stack from. If None, then
-        the stack is initialized to be empty
+        :param items: the List to initialize the stack from. If None, then the stack
+        is initialized to be empty
         """
         self._items = []
         self._items.extend(reversed(items if items else []))
@@ -46,5 +45,5 @@ class Stack:
 
         :return: True if the stack contains any more options, else False
         """
-        remaining_options = [item for item in self._items if item.startswith("-")]
-        return len(remaining_options) != 0
+        remaining_opts = [item for item in self._items if item.startswith("-")]
+        return len(remaining_opts) != 0

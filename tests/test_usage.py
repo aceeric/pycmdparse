@@ -24,7 +24,7 @@ def test_usage_utilname():
 def test_usage_summary():
     class TestCmdLine(CmdLine):
         yaml_def = '''
-        summary: X 
+        summary: X
         '''
     TestCmdLine.parse("util-name")
     TestCmdLine.show_usage()
@@ -33,7 +33,7 @@ def test_usage_summary():
 def test_usage_usage():
     class TestCmdLine(CmdLine):
         yaml_def = '''
-        usage: X 
+        usage: X
         '''
     TestCmdLine.parse("util-name")
     TestCmdLine.show_usage()
@@ -44,7 +44,7 @@ def test_usage_positional():
         yaml_def = '''
         positional_params:
           params: X
-          text: X 
+          text: X
         '''
     TestCmdLine.parse("util-name")
     TestCmdLine.show_usage()

@@ -5,7 +5,8 @@ from .cmdline_exception import CmdLineException
 
 class MultiTypeEnum(Enum):
     """
-    Defines the number of params a ParamOpt option can pull from the command line
+    Defines the number of params a ParamOpt option can pull from the
+    command line
     """
 
     EXACTLY = 1,

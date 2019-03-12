@@ -86,11 +86,13 @@ def test_multi_param_opt_defaulted():
     args = "util-name --a-opt A1 A2 A3"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    # specified on the command line, no limit, no subsequent options or positional params so gets everything
+    # specified on the command line, no limit, no subsequent options or
+    # positional params so gets everything
     assert TestCmdLine.a_opt == ["A1", "A2", "A3"]
     # not specified on the command line, so gets the default
     assert TestCmdLine.b_opt == ["b-default-1", "b-default-2"]
-    # not specified on the command line, so gets the default (as a list, even though not a list in the yaml)
+    # not specified on the command line, so gets the default (as a list, even
+    # though not a list in the yaml)
     assert TestCmdLine.c_opt == ["c-default-1"]
     # a default specified differently in the yaml
     assert TestCmdLine.d_opt == ["D1", "D2", "D3"]
@@ -120,4 +122,4 @@ def test_multi_param_opt_defaulted_and_cmdline():
     args = "util-name --test-opt CMD1 CMD2 CMD3"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.test_opt == ["CMD1", "CMD2", "CMD3"]  # not ["DEFAULT1", "DEFAULT2"]
+    assert TestCmdLine.test_opt == ["CMD1", "CMD2", "CMD3"]

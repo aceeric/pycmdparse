@@ -181,8 +181,9 @@ def test_multi_param_opt_1():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == [123, 456]
-    assert TestCmdLine.b_opt == [datetime.datetime.strptime("2019-12-31", "%Y-%m-%d").date(),
-                                 datetime.datetime.strptime("2019-01-01", "%Y-%m-%d").date()]
+    assert TestCmdLine.b_opt ==\
+           [datetime.datetime.strptime("2019-12-31", "%Y-%m-%d").date(),
+            datetime.datetime.strptime("2019-01-01", "%Y-%m-%d").date()]
     assert TestCmdLine.c_opt == [456.78, 901.23]
 
 
@@ -230,8 +231,9 @@ def test_multi_param_opt_2():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.a_opt == [888, 777]
-    assert TestCmdLine.b_opt == [datetime.datetime.strptime("2019-12-31", "%Y-%m-%d").date(),
-                                 datetime.datetime.strptime("2016-04-05", "%Y-%m-%d").date()]
+    assert TestCmdLine.b_opt ==\
+           [datetime.datetime.strptime("2019-12-31", "%Y-%m-%d").date(),
+            datetime.datetime.strptime("2016-04-05", "%Y-%m-%d").date()]
     assert TestCmdLine.c_opt == [111.222, 333.444]
 
 
@@ -290,7 +292,8 @@ def test_multi_param_opt():
     assert TestCmdLine.a_opt == ["A1", "A2"]
     # specified on the command line, at most 4 but terminated by --c-opt
     assert TestCmdLine.b_opt == ["B1", "B2"]
-    # specified on the command line, no limit so pulls all remaining tokens because no positional params
+    # specified on the command line, no limit so pulls all remaining tokens
+    # because no positional params
     assert TestCmdLine.c_opt == ["C1", "C2", "C3"]
     # not specified on the command line, so empty list
     assert TestCmdLine.d_opt == []
@@ -314,4 +317,5 @@ def test_positional_params():
     args = "util-name -NO --OPTIONS SO -- ALL POSITIONAL"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO", "--", "ALL", "POSITIONAL"]
+    assert TestCmdLine.positional_params == ["-NO", "--OPTIONS", "SO",
+                                             "--", "ALL", "POSITIONAL"]

@@ -1,5 +1,6 @@
 """
-https://stackoverflow.com/questions/3203286/how-to-create-a-read-only-class-property-in-python/35640842#35640842
+https://stackoverflow.com/questions/3203286/
+how-to-create-a-read-only-class-property-in-python/35640842#35640842
 Thanks to: https://stackoverflow.com/users/1113207/mikhail-gerasimov,
 and https://stackoverflow.com/users/941102/michael-reinhardt
 """
@@ -8,8 +9,8 @@ and https://stackoverflow.com/users/941102/michael-reinhardt
 # noinspection PyPep8Naming
 class classproperty:
     """
-    Same as property(), but passes obj.__class__ instead of obj to fget/fset/fdel.
-    Original code for property emulation:
+    Same as property(), but passes obj.__class__ instead of obj to
+    fget/fset/fdel. Original code for property emulation:
     https://docs.python.org/3.5/howto/descriptor.html#properties
     """
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):

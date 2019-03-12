@@ -65,7 +65,8 @@ def test_positional_param_validator():
         def validator(cls, to_validate):
             if isinstance(to_validate, PositionalParams):
                 if len(to_validate.params) != 3:
-                    return OptAcceptResultEnum.ERROR, "Requires exactly three positional params"
+                    return OptAcceptResultEnum.ERROR,\
+                           "Requires exactly three positional params"
             return None,
 
         a_opt = None
@@ -75,5 +76,3 @@ def test_positional_param_validator():
     assert len(TestCmdLine.positional_params) == 4
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert TestCmdLine.parse_errors[0] == "Requires exactly three positional params"
-
-
