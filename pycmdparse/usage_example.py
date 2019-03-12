@@ -13,6 +13,8 @@ class UsageExample:
     Logging is verbose, meaning detailed diagnostic information is included. As
     specified by the --log-cat option, only warnings are logged. Content is appended to
     the file. (If --append were omitted, then the file would be overwritten each time.)
+
+    There's no functionality here - its just help for the end user.
     """
     def __init__(self, example):
         """

@@ -64,7 +64,7 @@ def test_param_opt():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     # not specified on the command line, so None
-    assert TestCmdLine.a_opt is None
+    assert not TestCmdLine.a_opt
     # specified on the command line, so has a value
     assert TestCmdLine.b_opt == "PASS"
 

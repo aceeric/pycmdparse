@@ -23,12 +23,13 @@ class AbstractOpt(ABC):
         the option name' further down.
         :param short_key: E.g. "v", for "-v"
         :param long_key: E.g. "verbose", for "--verbose"
-        :param opt_hint: For options accepting params, a mnemonic for the user that is
+        :param opt_hint: For options accepting params, this is a mnemonic for the user that is
         presented in the usage instructions. E.g. if the usage instructions for the option
         looks like this: "-f,--filenane <pathspec>", then "pathspec" is the hint.
-        :param required: True if the option must be supplied on the command line, else False
+        :param required: True if the option must be supplied on the command line, else False.
+        Default is false.
         :param is_internal: If True, then this is an internal option and doesn't appear on the
-        usage instructions
+        usage instructions. Default is false.
         :param default_value: A default value. Ignored if this is a mandatory option. (It wouldn't
         make sense to require the user to provide an option on the command line but then
         specify a default value for that option.)
@@ -38,7 +39,7 @@ class AbstractOpt(ABC):
 
         Determining the option name: after an option is parsed, its value is injected into
         the CmdLine subclass running the arg parser. The Python identifier that is used to hold
-        the option value is the first non-null in order from: opt_name, long_key, short_key.
+        the option value is the first non-null, in order, from: opt_name, long_key, short_key.
         So, to further abbreviate the yaml, if the option key is also a valid Python identifier,
         then the name element of the option in the yaml can be omitted. E.g. for option
         '--verbose', the injected field name would be 'verbose'. For option '--file-name',
@@ -47,12 +48,12 @@ class AbstractOpt(ABC):
         readable, but is supported. An invalid Python identifier raises an exception.
 
         """
-        if long_key is None and short_key is None:
+        if not long_key and not short_key:
             raise CmdLineException("YAML must specify 'short' or 'long' option key")
-        if short_key is not None and len(short_key) != 1:
+        if short_key and len(short_key) != 1:
             raise CmdLineException("Invalid short key: '{}'".format(short_key))
 
-        self._opt_name = next(el for el in [opt_name, long_key, short_key] if el is not None).replace('-', '_')
+        self._opt_name = next(el for el in [opt_name, long_key, short_key] if el).replace('-', '_')
         self._short_key = short_key
         self._long_key = long_key
         self._opt_hint = opt_hint
@@ -98,18 +99,18 @@ class AbstractOpt(ABC):
         or mnemonic that briefly lets the user know what parameter is expected for an option.
 
         :return: E.g.: if short key is "f" and long key is "file-name", and hint is is "pathspec",
-        then returns: "-f, --file-name <pathspec>". If short key is "a" and long key is "action",
-        and hint is is "upload|download", then returns: "-a, --action <upload|download>". If
+        then returns: "-f,--file-name <pathspec>". If short key is "a" and long key is "action",
+        and hint is is "upload|download", then returns: "-a,--action <upload|download>". If
         short key is "t" and long key is "timeout", and hint is is "n", then returns:
-        "-t, --timeout <n>". Etc.
+        "-t,--timeout <n>". Etc.
         """
         s = ""
-        if self._short_key is not None:
+        if self._short_key:
             s += "-" + self._short_key
-        if self._long_key is not None:
+        if self._long_key:
             s += "" if len(s) == 0 else ","
             s += "--" + self._long_key
-        if self._opt_hint is not None:
+        if self._opt_hint:
             s += " <" + self._opt_hint + ">"
         return s
 
@@ -118,7 +119,7 @@ class AbstractOpt(ABC):
         """
         This property indicates whether an option has been assigned a value.
 
-        For boolean options this is always true because boolean options are initialized to
+        For boolean options, return is always true because boolean options are initialized to
         have a value of False, and then the value is set to True if the option is specified on
         the command line. So either way, a boolean is initialized.
 
@@ -127,8 +128,8 @@ class AbstractOpt(ABC):
 
         A non-mandatory option is initialized if a default was specified in the yaml, or,
         the option and parameter was provided on the command line. The setup for this is
-        handled in the constructor. This getter just returns the result of that
-        adjudication.
+        handled in the constructor, and in the accept and do_final_validate functions.
+        This getter just returns the result of that adjudication.
         """
         return self._initialized
 
@@ -179,9 +180,9 @@ class AbstractOpt(ABC):
         is defined, then returns only that part.
         """
         to_return = ""
-        if self._short_key is not None:
+        if self._short_key:
             to_return += "-" + self._short_key
-        if self._long_key is not None:
+        if self._long_key:
             to_return += "/" if len(to_return) > 0 else ""
             to_return += "--" + self._long_key
         return to_return
@@ -190,8 +191,9 @@ class AbstractOpt(ABC):
         """
         If the token on the top of the stack matches the short or long key for
         the option, then processes the token from the stack, delegating processing to a
-        sub-class. If the option is successfully processed, then the stack is
-        positioned at the next token so parsing can continue.
+        sub-class. If the option is successfully processed, then the sub-class is expected
+        to consume all its tokens, so the stack is positioned at the next token so parsing
+        can continue.
 
         :param stack: the command line stack
 
@@ -200,9 +202,9 @@ class AbstractOpt(ABC):
         """
         if stack.size() == 0:
             return OptAcceptResultEnum.IGNORED,
-        if re.compile("-{1,2}\\w").match(stack.peek()) is None:
-            # only match options starting with dash or double dash. (Triple-dash is ignored, according to
-            # the philosophy of "prevent small problems")
+        if not re.compile("-{1,2}\\w").match(stack.peek()):
+            # only match options starting with dash or double dash. (Triple-dash is ignored,
+            # according to the philosophy of "prevent small problems")
             return OptAcceptResultEnum.IGNORED,
         if stack.peek().lstrip("-") in [self._short_key, self._long_key]:
             return self._do_accept(stack)
@@ -225,7 +227,7 @@ class AbstractOpt(ABC):
         The the option has a data type (which is not required) then validates that the option
         value matches the specified data type. Only very basic typing is supported: integers,
         floating point, and a rudimentary date. Anything beyond that would need to be handled
-        by the utility.
+        by the utility via the validation callback.
 
         :param value: the option value to validate
 
@@ -277,7 +279,7 @@ class AbstractOpt(ABC):
         for pattern in patterns.keys():
             p = re.compile(pattern)
             g = p.match(value)
-            if g is not None and len(g.groups()) == 2:
+            if g and len(g.groups()) == 2:
                 to_return = patterns[pattern].replace("1", g.groups()[0]).replace("2", g.groups()[1])
                 return datetime.datetime.strptime(value, to_return).date()
         return None

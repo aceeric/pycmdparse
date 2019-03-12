@@ -16,7 +16,7 @@ class classproperty:
         self.fget = fget
         self.fset = fset
         self.fdel = fdel
-        if doc is None and fget is not None:
+        if not doc and not fget:
             doc = fget.__doc__
         self.__doc__ = doc
 

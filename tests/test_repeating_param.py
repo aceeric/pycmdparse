@@ -58,7 +58,7 @@ def test_exactly_three_opt_repeating():
     args = "util-name --test-opt A --test-opt B --test-opt C"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
-    assert TestCmdLine.test_opt is None  # no injection because of the parse error
+    assert not TestCmdLine.test_opt  # no injection because of the parse error
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['C']"
 
 
@@ -80,7 +80,7 @@ def test_exactly_one_opt_repeating():
     args = "util-name --test-opt A --test-opt B --test-opt C"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
-    assert TestCmdLine.test_opt is None  # no injection because of the parse error
+    assert not TestCmdLine.test_opt  # no injection because of the parse error
     assert TestCmdLine.parse_errors[0] == "Unsupported option: 'B'"
 
 
@@ -99,7 +99,7 @@ def test_exactly_one_opt_not_repeating():
     args = "util-name --test-opt A B C"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
-    assert TestCmdLine.test_opt is None  # no injection because of the parse error
+    assert not TestCmdLine.test_opt  # no injection because of the parse error
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['B', 'C']"
 
 
@@ -118,7 +118,7 @@ def test_bool_opt_repeating():
     args = "util-name --test-opt --test-opt"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
-    assert TestCmdLine.test_opt is None  # no injection because of the parse error
+    assert not TestCmdLine.test_opt  # no injection because of the parse error
     assert "--test-opt already specified" in TestCmdLine.parse_errors[0]
 
 
@@ -140,5 +140,5 @@ def test_at_most_3_opt_repeating():
     args = "util-name --test-opt A --test-opt B C --test-opt D"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
-    assert TestCmdLine.test_opt is None  # no injection because of the parse error
+    assert not TestCmdLine.test_opt  # no injection because of the parse error
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['D']"

@@ -42,17 +42,13 @@ class MyCmdLine(CmdLine):
           default :
           help: >
             TBD
-        - name    : tbd2
-          short   : z
+        - short   : z
           long    : tbd-2
-          hint    : tbd2
-          required: false
-          datatype:
-          opt     :
-          count   :
-          default :
           help: >
-            TBD
+            This shows the minimum requirement to define an option. The injected
+            name is derived from the long key if available, else the short key.
+            The option is defined as an option taking one parameter, in this case
+            '--tbd xyz', or -z xyz'
 
     details: >
       TBD

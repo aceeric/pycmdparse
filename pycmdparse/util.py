@@ -27,7 +27,7 @@ class Util:
         is passed, then an empty List is returned.
         """
         segments = []
-        if text_block is None or len(text_block.strip()) == 0:
+        if not text_block or len(text_block.strip()) == 0:
             return segments
         lines = text_block.split('\n')
         for line in lines:

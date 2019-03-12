@@ -17,7 +17,7 @@ class ParseResultEnum(Enum):
 
     @staticmethod
     def fromstr(enum_str):
-        if enum_str is None:
+        if not enum_str:
             return None
         elif enum_str.lower() == "success":
             return ParseResultEnum.SUCCESS

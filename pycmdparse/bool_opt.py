@@ -22,13 +22,13 @@ class BoolOpt(AbstractOpt):
     """
 
     def __init__(self, opt_name, short_key, long_key, opt_hint, required, is_internal, help_text):
+        # super init sets the object value to False, and sets initialized to True
         super().__init__(opt_name, short_key, long_key, opt_hint, required, is_internal, False,
                          DataTypeEnum.BOOL, help_text)
-        # super init sets the object value to False, and sets initialized to True
 
     @property
     def value(self):
-        return False if self._value is None else self._value
+        return False if not self._value else self._value
 
     def _do_accept(self, stack):
         """
@@ -41,7 +41,7 @@ class BoolOpt(AbstractOpt):
         Else returns OptAcceptResultEnum.ERROR
         """
 
-        if self._supplied_key is not None:
+        if self._supplied_key:
             return OptAcceptResultEnum.ERROR, "Option {} already specified once".format(self._supplied_key)
         self._supplied_key = stack.pop()
         self._value = True

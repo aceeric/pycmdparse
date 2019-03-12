@@ -94,7 +94,7 @@ class CmdLine:
     @classproperty
     def parse_errors(cls):
         """
-        :return:  the positional params as a list. Could be empty. Never None
+        :return:  the parse errors as a list. Could be empty. Never None
         """
         return cls._parse_errors
 
@@ -133,7 +133,8 @@ class CmdLine:
     @classmethod
     def get_option(cls, option_name):
         """
-        Gets an option using the name defined in the yaml path: category.options[n].name
+        Gets an option using the name defined in the yaml path: category.options[n].name.
+        Provided in case there is a need to access option metadata.
 
         :param option_name: As specified in the option's "name" field in the yaml
 
@@ -148,7 +149,7 @@ class CmdLine:
     @classmethod
     def display_info(cls, parse_result):
         """
-        Shows usage, or shows errors, based on the passed result object. If the passed
+        Shows usage, or shows errors, based on the passed parse_result arg. If the passed
         value indicates a parse error, then displays the errors in the internal
         class errors collection. If the passed value indicates to show usage instructions
         (e.g. if -h was provided on the command line) then shows the usage instructions
@@ -157,7 +158,7 @@ class CmdLine:
         :param parse_result: the result of a prior command line parse operation
         """
         if parse_result in [ParseResultEnum.PARSE_ERROR, ParseResultEnum.MISSING_MANDATORY_ARG]:
-            if cls._parse_errors is not None and len(cls._parse_errors) > 0:
+            if cls._parse_errors and len(cls._parse_errors) > 0:
                 ShowInfo.show_errors(cls._parse_errors, cls._utility_name)
         elif parse_result is ParseResultEnum.SHOW_USAGE:
             cls.show_usage()
@@ -165,7 +166,7 @@ class CmdLine:
     @classmethod
     def show_usage(cls):
         """
-        Mainly to support test
+        Shows full usage instructions (mainly to support test)
         """
         ShowInfo.show_usage(cls._utility_name, cls._summary, cls._usage, cls._supported_options,
                             cls._details, cls._examples, cls._positional_params, cls._addendum)
@@ -177,16 +178,17 @@ class CmdLine:
         associated class fields, then parses the passed command line against the options defined
         by the yaml. If all is successful then adds one field to the class for each defined option,
         and initializes that field with the parameter specified on the command line for the
-        option. (Or, for boolean options that don't take parameters, sets those values to True.)
+        option. (Or, for boolean options that don't take parameters, sets those values to True or
+        False.)
 
         :param cmd_line: Can be a single string, which the function tokenizes and processes, or,
-        can be a list, like the Python interpreter provides. The first element is expected to be
-        the invoking utility name. This element is ignored by the parser.
+        can be a list, like the Python interpreter provides in sys.argv. The first element is
+        expected to be the invoking utility name. This element is ignored by the parser.
 
-        :return: an ParseResultEnum, indicating the results of the command-line parse.
+        :return: a ParseResultEnum, indicating the results of the command-line parse.
         """
         cls._init_from_yaml()
-        has_options = True if cls._supported_options is not None else False
+        has_options = True if cls._supported_options else False
         if type(cmd_line) is str:
             cmdline_stack = Splitter.split_str(cmd_line, has_options)
         elif type(cmd_line) is list:
@@ -275,7 +277,9 @@ class CmdLine:
                 cls._append_error(accept_result[1])
                 return ParseResultEnum.PARSE_ERROR
 
-        cls._add_fields()  # inject fields into the subclass - one for each option - and set their values as parsed
+        # all is good: inject fields into the subclass - one for each option - and
+        # set their values as parsed from the command line
+        cls._add_fields()
         return ParseResultEnum.SUCCESS
 
     @staticmethod
@@ -291,7 +295,7 @@ class CmdLine:
         :return: a list of only options
         """
         to_return = []
-        if supported_opts is not None:
+        if supported_opts:
             for category in supported_opts:
                 to_return.extend(category.options)
         return to_return
@@ -307,7 +311,7 @@ class CmdLine:
 
         :param cmdline_stack: the remaining tokens on the command line
         """
-        if cls._positional_params is not None:
+        if cls._positional_params:
             cls._positional_params.params = cmdline_stack.pop_all()
 
     @classmethod
@@ -317,7 +321,7 @@ class CmdLine:
 
         :param err_message: the error message to append
         """
-        if cls._parse_errors is None:
+        if not cls._parse_errors:
             cls._parse_errors = []
         cls._parse_errors.append(err_message)
 
@@ -328,8 +332,8 @@ class CmdLine:
         the options's name in the supported options collection, and set the value of the
         class field to the value from the option object (i.e. the option's parameter.)
         The outer project code can then get the parameter directly from this class field
-        rather than having to navigate the params collection, and then having to access
-        the AbstractOpt subclass's interface.
+        rather than having to navigate the supported options collection, and then having
+        to access the AbstractOpt subclass's interface.
 
         It's a little more intuitive way to access the option values. If the field is already
         present in the class, then this just sets the value, otherwise it creates the field
@@ -351,33 +355,35 @@ class CmdLine:
         details, examples, and addendum. If the yaml is missing an entry, then the corresponding
         class field is set to None.
         """
-        if cls.yaml_def is None:
+        if not cls.yaml_def:
             # nothing to do
             return
 
         parsed = yaml.load(cls.yaml_def, Loader=yaml.FullLoader)
         utility = parsed.get("utility")
-        if utility is not None:
+        if utility:
             cls._utility_name = utility.get("name")
             cls._require_args = utility.get("require_args")
             if not isinstance(cls._require_args, bool):
                 cls._require_args = False
         cls._summary = parsed.get("summary")
         cls._usage = parsed.get("usage")
-        if parsed.get("positional_params") is not None:
+        if parsed.get("positional_params"):
             cls._positional_params = PositionalParams(parsed.get("positional_params"))
-        if parsed.get("supported_options") is not None:
+        if parsed.get("supported_options"):
             for category in parsed.get("supported_options"):
                 opt_cat = OptCategory(category.get("category"))
+                if not category:
+                    raise CmdLineException("At least one 'category' is required under 'supported_options'")
                 for opt in category.get("options"):
                     opt_cat.options.append(OptFactory.create_option(opt))
-                if cls._supported_options is None:
+                if not cls._supported_options:
                     cls._supported_options = []
                 cls._supported_options.append(opt_cat)
         cls._details = parsed.get("details")
-        if parsed.get("examples") is not None:
+        if parsed.get("examples"):
             for example in parsed.get("examples"):
-                if cls._examples is None:
+                if not cls._examples:
                     cls._examples = []
                 cls._examples.append(UsageExample(example))
         cls._addendum = parsed.get("addendum")

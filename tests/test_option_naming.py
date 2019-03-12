@@ -59,7 +59,7 @@ def test_long_form_2a():
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.test_opt is None
+    assert not TestCmdLine.test_opt
 
 
 def test_long_form_3():
@@ -123,7 +123,7 @@ def test_short_form_2():
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.t is None
+    assert not TestCmdLine.t
 
 
 def test_short_form_3():

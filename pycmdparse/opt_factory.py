@@ -42,7 +42,7 @@ class OptFactory:
         """
 
         option_type = opt_dict.get(OptFactory.OPT_KEY)
-        if option_type is None:
+        if not option_type:
             option_type = OptFactory.PARAM_OPT
         if option_type in OptFactory.KNOWN_OPTION_TYPES:
             return OptFactory._new_option(option_type, opt_dict)
@@ -76,10 +76,10 @@ class OptFactory:
             return BoolOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, help_text)
         else:  # param
             multi_type = MultiTypeEnum.fromstr(opt_dict.get("multi_type"))
-            if multi_type is None:
+            if not multi_type:
                 multi_type = MultiTypeEnum.EXACTLY
             count = opt_dict.get("count")
-            if count is None and multi_type in [MultiTypeEnum.EXACTLY, MultiTypeEnum.AT_MOST]:
+            if not count and multi_type in [MultiTypeEnum.EXACTLY, MultiTypeEnum.AT_MOST]:
                 count = 1
             return ParamOpt(opt_name, short_key, long_key, opt_hint, required, is_internal, default,
                             multi_type, count, data_type, help_text)

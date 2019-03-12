@@ -18,7 +18,7 @@ class ShowInfo:
         print("\nError{}:\n".format("(s)" if len(parse_errors) > 1 else ""))
         for parse_error in parse_errors:
             print(parse_error)
-        if utility_name is not None:
+        if utility_name:
             print("\nFor usage instructions, try: {0} -h (or {0} --help)\n".format(utility_name))
 
     @staticmethod
@@ -40,54 +40,47 @@ class ShowInfo:
         """
         max_len, ignore = shutil.get_terminal_size()
 
-        # program name
-        if utility_name is not None:
+        if utility_name:
             print("\n" + utility_name + "\n" + "=" * len(utility_name))
 
-        # summary
-        if summary is not None:
+        if summary:
             for line in Util.split_string(summary, max_len):
                 print(line)
 
-        # usage - if not explicitly defined in the yaml, then auto-generated here
-        if usage is not None:
+        # if not explicitly defined in the yaml, then auto-generated here
+        if usage:
             print("Usage:\n")
             for line in Util.split_string(usage, max_len):
                 print(line)
         else:
             ShowInfo._generate_usage(utility_name, supported_options, positional_params, max_len)
 
-        # positional params
-        if positional_params is not None and positional_params.help_text is not None:
+        if positional_params and positional_params.help_text:
             for line in Util.split_string(positional_params.help_text, max_len):
                 print(line)
 
-        # options and parameters
-        if supported_options is not None:
+        if supported_options:
             print("Options and parameters:")
             left_len = ShowInfo._calc_left_len(supported_options)
             for category in supported_options:
-                if category.category is not None and len(category.category.strip()) > 0:
+                if category.category and len(category.category.strip()) > 0:
                     print("\n{}:\n".format(category.category))
                 for line in ShowInfo._get_option_help(category.options, max_len, left_len):
                     print(line)
 
-        # details
-        if details is not None:
+        if details:
             print("Additional detail:\n")
             for line in Util.split_string(details, max_len):
                 print(line)
 
-        # examples
-        if examples is not None:
+        if examples:
             print("Examples:\n")
             for example in examples:
                 print(example.example + "\n")
                 for line in Util.split_string(example.explanation, max_len):
                     print(line)
 
-        # addendum
-        if addendum is not None:
+        if addendum:
             print("Supplemental:\n")
             for line in Util.split_string(addendum, max_len):
                 print(line)
@@ -107,7 +100,7 @@ class ShowInfo:
             return
 
         print("Usage:\n")
-        utility_name = utility_name + " " if utility_name is not None else ""
+        utility_name = utility_name + " " if utility_name else ""
         line = utility_name
 
         if supported_options:
@@ -132,6 +125,15 @@ class ShowInfo:
 
     @staticmethod
     def _calc_left_len(supported_options):
+        """
+        Calculates the max length of the keys and hint for all options, to support
+        vertically aligning the option help. The keys and hint for an option are like
+        "-f,--filename <filename-spec>"
+
+        :param supported_options: the defined options and parameters from the yaml
+
+        :return: the max length
+        """
         left_len = 0
         for category in supported_options:
             for option in category.options:
@@ -140,6 +142,20 @@ class ShowInfo:
 
     @staticmethod
     def _get_option_help(supported_options, max_len, left_len):
+        """
+        Gets the help text for an option, and breaks it into lines to format it for
+        display to the console. E.g.:
+
+        -d,--depth<n>  This is the help text
+                       for the depth option.
+
+        :param supported_options: the defined options and parameters from the yaml
+        :param max_len: max console window width. The help is chunked to not exceed this
+        :param left_len: the max length of the keys and hints, so the help text left-aligns
+
+        :return: the help text, ready to be printed. In the example above, returns:
+        ["-d,--depth<n>  This is the help text","               for the depth option."]
+        """
         to_return = []
         if max_len <= left_len:
             # safety - make width big enough so the math works
@@ -176,7 +192,7 @@ class ShowInfo:
 
         :return: The value of 'help_text', potentially prepended as described.
         """
-        if help_text is None or len(help_text.strip()) == 0:
+        if not help_text or len(help_text.strip()) == 0:
             return help_text
         else:
             return ("Mandatory. " if required else "Optional. ") + help_text
@@ -189,7 +205,6 @@ class ShowInfo:
         :param val:   The string to pad
         :param width: The desired width
 
-        :return: The right-padded string. E.g. fixed("XYX", 10) returns
-        string: "XYZ       "
+        :return: The right-padded string. E.g. fixed("XYZ", 10) returns: "XYZ       "
         """
         return (val + (" " * width))[0:width]

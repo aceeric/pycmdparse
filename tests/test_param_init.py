@@ -236,7 +236,7 @@ def test_exactly_explicit_no_default_no_args_optional():
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.test_opt is None
+    assert not TestCmdLine.test_opt
 
 
 def test_exactly_explicit_no_default_args_required():
@@ -403,7 +403,7 @@ def test_exactly_implicit_no_default_no_args_optional():
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
-    assert TestCmdLine.test_opt is None
+    assert not TestCmdLine.test_opt
 
 
 def test_exactly_implicit_no_default_args_required():

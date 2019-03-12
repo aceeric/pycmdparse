@@ -5,7 +5,7 @@ from .cmdline_exception import CmdLineException
 
 class MultiTypeEnum(Enum):
     """
-    Defines the type of a ParamOpt option
+    Defines the number of params a ParamOpt option can pull from the command line
     """
 
     EXACTLY = 1,
@@ -17,7 +17,7 @@ class MultiTypeEnum(Enum):
 
     @staticmethod
     def fromstr(enum_str):
-        if enum_str is None:
+        if not enum_str:
             return MultiTypeEnum.EXACTLY
         elif enum_str.lower() == "exactly":
             return MultiTypeEnum.EXACTLY

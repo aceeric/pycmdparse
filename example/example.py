@@ -185,7 +185,8 @@ class MyCmdLine(CmdLine):
           long      : depth
           hint      : n      # a hint for the user in usage instructions. Displays like: "-d,--depth <n>"
           required  : false  # omission from the command line will not cause a parse error
-          datatype  : int    # If omitted from the yaml, param is a string. Types: int/float/date. See 'AbstractOpt'
+          datatype  : int    # If omitted from the yaml, param is a string. Types: int/float/date/bool.
+                             # See 'AbstractOpt'
           opt       : param  # this is a 'param' option. 'multi_type' is omitted, so it accepts exactly one param
           default   : 1      # if the option is omitted from the command line, then the param gets this value
           help: >

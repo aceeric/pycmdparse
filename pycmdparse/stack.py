@@ -1,7 +1,8 @@
 class Stack:
     """
     A simple stack with some additional functionality that supports
-    command-line parsing
+    command-line parsing. A stack provides an intuitive way to parse
+    the command line.
     """
     def __init__(self, items):
         """
@@ -40,7 +41,7 @@ class Stack:
 
     def has_options(self):
         """
-        Checks to see if the stack contains any more options (e.g.
+        Checks to see if the stack contains any more options (i.e.
         tokens that start with dash or double dash.)
 
         :return: True if the stack contains any more options, else False

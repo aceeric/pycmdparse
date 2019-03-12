@@ -59,6 +59,10 @@ class ParamOpt(AbstractOpt):
     the param value is provided as a scalar. In all other cases, the param value is provided as
     a list - which could be empty, but will never be 'None'.
 
+    For options of this type, the following command line forms produce the same parse result:
+
+    "-f A B C", and "-f A -f B -f C" both result in the "-f" option having params
+    value: ['A','B','C']
     """
 
     @property
@@ -72,12 +76,12 @@ class ParamOpt(AbstractOpt):
     def __init__(self, opt_name, short_key, long_key, opt_hint, required, is_internal, default_value,
                  multi_type, count, data_type, help_text):
         # enforce the default value to be stored internally as a list
-        if default_value is not None and not isinstance(default_value, list):
+        if default_value and not isinstance(default_value, list):
             default_value = [default_value]
         super().__init__(opt_name, short_key, long_key, opt_hint, required, is_internal, default_value,
                          data_type, help_text)
-        self._multi_type = multi_type if multi_type is not None else MultiTypeEnum.EXACTLY
-        self._count = 1 if multi_type is None or count is None else count
+        self._multi_type = multi_type if multi_type else MultiTypeEnum.EXACTLY
+        self._count = 1 if not multi_type or not count else count
         self._value = []
         # validate defaults against instance data type
         if not self._ensure_data_type(self._default_value):
@@ -89,15 +93,25 @@ class ParamOpt(AbstractOpt):
     def value(self):
         """
         :return: If the type is EXACTLY, and the specified count is one, then return the value as
-        a scalar. If the type is not multi, or the count is not zero, then return a list of
-        values - which could be empty.
+        a scalar. (It's more natural to get the value from a single-param option as a scalar than to
+        constantly have to access it as my_field[0].) If the type is not multi, or the count is not
+        zero, then return a list of values - which could be empty.
         """
         to_return = self._value if self._initialized and self._from_cmdline else self._default_value
         if self._multi_type is MultiTypeEnum.EXACTLY and self._count == 1:
-            return to_return[0] if to_return is not None and len(to_return) == 1 else None
-        return [] if to_return is None else to_return
+            return to_return[0] if to_return and len(to_return) == 1 else None
+        return [] if not to_return else to_return
 
     def _do_accept(self, stack):
+        """
+        Based on the multi-type, pull tokens from the command line to initialize the options.
+
+        :param stack: the command line. Expection is the stack is positioned at the command line
+        arg matching this option
+
+        :return: A tuple. Element zero is OptAcceptResultEnum.ACCEPTED if no parse errors,
+        else OptAcceptResultEnum.ERROR. Element one is an error message if element zero is ERROR
+        """
         if stack.size() < 2:
             return OptAcceptResultEnum.ERROR, "{}: requires a value, which was not supplied".format(self._supplied_key)
         self._supplied_key = stack.pop()
@@ -115,7 +129,7 @@ class ParamOpt(AbstractOpt):
         Ensures that the values in the passed list conform to the object's data type
 
         :param values: a list of values to inspect. If the list is non-empty, values in the list
-        might be modifed. E.g. if the class is INT and list is ['123', '456'] then it will be
+        might be modified. E.g. if the class is INT and list is ['123', '456'] then it will be
         modified to contain [123, 456]
 
         :return: True if a) the object has a defined data type, and the object values are
@@ -124,10 +138,10 @@ class ParamOpt(AbstractOpt):
         list contains something to validate, and something in the list is not in conformance
         with the data type.
         """
-        if self._data_type is not None and values:
+        if self._data_type and values:
             for i, v in enumerate(values):
                 tmp = self._validate_datatype(v)
-                if tmp is None:
+                if not tmp:
                     return False
                 values[i] = tmp
         return True
