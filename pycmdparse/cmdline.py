@@ -339,13 +339,13 @@ class CmdLine:
         present in the class, then this just sets the value, otherwise it creates the field
         and sets the value.
         """
-        for opts in CmdLine._flatten(cls._supported_options):
-            if not opts.opt_name.isidentifier():
+        for opt in CmdLine._flatten(cls._supported_options):
+            if not opt.opt_name.isidentifier():
                 raise CmdLineException("Specified option name '{}' must be a valid Python identifier".format(
-                    opts.opt_name))
-            if opts.opt_name in dir(CmdLine):
-                raise CmdLineException("Specified option name '{}' clashes".format(opts.opt_name))
-            setattr(cls, opts.opt_name, opts.value)
+                    opt.opt_name))
+            if opt.opt_name in dir(CmdLine):
+                raise CmdLineException("Specified option name '{}' clashes".format(opt.opt_name))
+            setattr(cls, opt.opt_name, opt.value)
 
     @classmethod
     def _init_from_yaml(cls):
