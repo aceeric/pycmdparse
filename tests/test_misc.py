@@ -125,6 +125,7 @@ def test_empty_1():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value  # no yaml no parse
     assert TestCmdLine.parse_errors[0] == "Arg parse error at: ['-v']"
+    TestCmdLine.display_info(parse_result)  # for coverage
 
 
 def test_empty_2():
@@ -161,7 +162,6 @@ def test_invalid_parse_object():
             - name      : test_opt
               long      : test-opt
               opt       : param
-              default   : [default1, default2, default3]
               multi_type: exactly
               required  : false
         '''
@@ -194,6 +194,158 @@ def test_single_dash():
         assert e.args[0] == "Invalid option: '-'"
 
 
+def test_unknown_param_type():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - name      : test_opt
+              long      : test-opt
+              opt       : param
+              multi_type: invalid
+        '''
+        test_opt = None
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0] == "Unknown param type: invalid"
+
+
+def test_unknown_option_type():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - name      : test_opt
+              long      : test-opt
+              opt       : invalid
+        '''
+        test_opt = None
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0] == "Unknown option type: invalid"
+
+
+def test_repr():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - long : test-opt
+              opt  : bool
+        '''
+    args = "util-name --test-opt"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.SUCCESS.value
+    test_opt = TestCmdLine.get_option("test_opt")  # for coverage
+    repr(test_opt)  # for coverage
+    test_opt = TestCmdLine.get_option("doesnt_exist")  # for coverage
+    assert not test_opt
+
+
+def test_name_clash():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - long : _supported_options
+              opt  : bool
+        '''
+    _supported_options = None
+
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0] == "Specified option name '_supported_options' clashes"
+
+
+def test_no_param():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - long : test
+        '''
+    _supported_options = None
+
+    args = "util-name --test"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
+    assert TestCmdLine.parse_errors[0]\
+           == "test: requires a value, which was not supplied"
+
+
+def test_no_cat():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          options:
+          - long : _supported_options
+            opt  : bool
+        '''
+    _supported_options = None
+
+    args = "util-name"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0].startswith("Error parsing the yaml")
+
 def test_full_usage():
-    # TODO FULL USAGE FOR COVERAGE
-    pass
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        utility:
+          name: xyz
+          require_args: false
+    
+        summary: >
+          Test
+    
+        #usage: >
+        # TBD
+    
+        positional_params:
+          params: N/A
+          text: >
+            Test
+    
+        supported_options:
+          - category: foo
+            options:
+            - name      : a
+              short     : a
+              long      : aa
+              hint      : a
+              required  : false
+              datatype  :
+              opt       : param
+              multi_type: no-limit
+              count     : a
+              default   :
+              help: >
+                Test
+    
+        details: >
+          Test
+    
+        examples:
+          - example: Test
+            explanation: >
+              Test
+    
+        addendum: >
+          Test
+        '''
+    args = "xyz --help"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.SHOW_USAGE.value
+    TestCmdLine.display_info(parse_result)  # for coverage

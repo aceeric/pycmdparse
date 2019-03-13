@@ -77,10 +77,17 @@ def test_param_opt_2():
                   opt     : param
                   datatype: decimal
                   default : 456.78
+                - name    : d_opt
+                  short   : d
+                  long    : d-opt
+                  opt     : param
+                  datatype: bool
+                  default : True
             '''
         a_opt = None
         b_opt = None
         c_opt = None
+        d_opt = None
 
     args = "util-name"
     parse_result = TestCmdLine.parse(args)
@@ -88,6 +95,7 @@ def test_param_opt_2():
     assert TestCmdLine.a_opt == 123
     assert TestCmdLine.b_opt.strftime("%Y-%m-%d") == "2019-12-31"
     assert TestCmdLine.c_opt == 456.78
+    assert TestCmdLine.d_opt
 
 
 def test_param_opt_invalid():
@@ -127,13 +135,13 @@ def test_param_opt_invalid():
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert "has incorrect data type" in TestCmdLine.parse_errors[0]
 
-    CmdLine.reset()
+    TestCmdLine.reset()
     args = "util-name -b notadate"  # expects date
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
     assert "has incorrect data type" in TestCmdLine.parse_errors[0]
 
-    CmdLine.reset()
+    TestCmdLine.reset()
     args = "util-name -c 2019-12-31"  # expects decimal
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.PARSE_ERROR.value

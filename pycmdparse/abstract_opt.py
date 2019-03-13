@@ -247,7 +247,14 @@ class AbstractOpt(ABC):
         is defined. If a data type is not defined, then returns None. If a data type
         is defined and the value doesn't match the type, then returns None.
         """
-        if self._data_type is DataTypeEnum.INT:
+        if self._data_type is DataTypeEnum.BOOL:
+            if isinstance(val, bool):
+                return val
+            try:
+                return bool(val)
+            except ValueError:
+                return None
+        elif self._data_type is DataTypeEnum.INT:
             if isinstance(val, int):
                 return val
             try:

@@ -25,8 +25,6 @@ my-utility --at-most2 ONE --at-most2 TWO THREE
 For no-limit options, these can repeat indefinitely:
 
 my-utility --no-limit ONE --no-limit TWO THREE --no-limit FOUR FIVE SIX ...
-
-No user would do this, of course. Well...
 """
 from pycmdparse.cmdline import CmdLine
 from pycmdparse.parseresult_enum import ParseResultEnum

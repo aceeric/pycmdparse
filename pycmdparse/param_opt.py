@@ -88,11 +88,12 @@ class ParamOpt(AbstractOpt):
         # validate defaults against instance data type
         if not self._ensure_data_type(self._default_value):
             raise CmdLineException("Data type does not match specification: {}"
-                                   .format(self._value))
-        if self._multi_type in [MultiTypeEnum.AT_MOST,
-                                MultiTypeEnum.EXACTLY]\
-                and len(self._value) > self._count:
-            raise CmdLineException("Invalid defaults supplied: {}".format(self._value))
+                                   .format(self._default_value))
+        if self._default_value and \
+            self._multi_type in [MultiTypeEnum.AT_MOST, MultiTypeEnum.EXACTLY] \
+            and len(self._default_value) > self._count:
+            raise CmdLineException("Invalid defaults supplied: {}"
+                                   .format(self._default_value))
 
     @property
     def value(self):
@@ -124,7 +125,7 @@ class ParamOpt(AbstractOpt):
         if stack.size() < 2:
             return OptAcceptResultEnum.ERROR, "{}: requires a value, which "\
                                               "was not supplied"\
-                .format(self._supplied_key)
+                .format(self._opt_name)
         self._supplied_key = stack.pop()
         while stack.size() > 0:
             if stack.peek().startswith("-")\

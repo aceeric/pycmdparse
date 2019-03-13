@@ -125,14 +125,7 @@ class CmdLine:
         cls._utility_name = None
         cls._require_args = None
         cls._parse_errors = None
-        cls.yaml_def = None
-
-    @classmethod
-    def __repr__(cls):
-        val = ""
-        for key, supported_option in cls._supported_options.items():
-            val += str(supported_option) + ("\n" if len(val) == 0 else "")
-        return val
+        # don't reset the yaml def - it might be being reused for a test
 
     @classmethod
     def get_option(cls, option_name):
@@ -378,33 +371,35 @@ class CmdLine:
             # nothing to do
             return
 
-        parsed = yaml.load(cls.yaml_def, Loader=yaml.FullLoader)
-        utility = parsed.get("utility")
-        if utility:
-            cls._utility_name = utility.get("name")
-            cls._require_args = utility.get("require_args")
-            if not isinstance(cls._require_args, bool):
-                cls._require_args = False
-        cls._summary = parsed.get("summary")
-        cls._usage = parsed.get("usage")
-        if parsed.get("positional_params"):
-            cls._positional_params = PositionalParams(
-                parsed.get("positional_params"))
-        if parsed.get("supported_options"):
-            for category in parsed.get("supported_options"):
-                opt_cat = OptCategory(category.get("category"))
-                if not category:
-                    raise CmdLineException("At least one 'category' required "
-                                           "under 'supported_options'")
-                for opt in category.get("options"):
-                    opt_cat.options.append(OptFactory.create_option(opt))
-                if not cls._supported_options:
-                    cls._supported_options = []
-                cls._supported_options.append(opt_cat)
-        cls._details = parsed.get("details")
-        if parsed.get("examples"):
-            for example in parsed.get("examples"):
-                if not cls._examples:
-                    cls._examples = []
-                cls._examples.append(UsageExample(example))
-        cls._addendum = parsed.get("addendum")
+        try:
+            parsed = yaml.load(cls.yaml_def, Loader=yaml.FullLoader)
+            utility = parsed.get("utility")
+            if utility:
+                cls._utility_name = utility.get("name")
+                cls._require_args = utility.get("require_args")
+                if not isinstance(cls._require_args, bool):
+                    cls._require_args = False
+            cls._summary = parsed.get("summary")
+            cls._usage = parsed.get("usage")
+            if parsed.get("positional_params"):
+                cls._positional_params = PositionalParams(
+                    parsed.get("positional_params"))
+            if parsed.get("supported_options"):
+                for category in parsed.get("supported_options"):
+                    opt_cat = OptCategory(category.get("category"))
+                    for opt in category.get("options"):
+                        opt_cat.options.append(OptFactory.create_option(opt))
+                    if not cls._supported_options:
+                        cls._supported_options = []
+                    cls._supported_options.append(opt_cat)
+            cls._details = parsed.get("details")
+            if parsed.get("examples"):
+                for example in parsed.get("examples"):
+                    if not cls._examples:
+                        cls._examples = []
+                    cls._examples.append(UsageExample(example))
+            cls._addendum = parsed.get("addendum")
+        except CmdLineException as e:
+            raise e
+        except Exception as e:
+            raise CmdLineException("Error parsing the yaml: " + e.args[0])

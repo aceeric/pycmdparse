@@ -1,5 +1,6 @@
 from pycmdparse.cmdline import CmdLine
 from pycmdparse.parseresult_enum import ParseResultEnum
+from pycmdparse.cmdline_exception import CmdLineException
 
 
 # noinspection PyUnusedLocal
@@ -123,3 +124,62 @@ def test_multi_param_opt_defaulted_and_cmdline():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.test_opt == ["CMD1", "CMD2", "CMD3"]
+
+
+def test_default_invalid_datatype():
+    class TestCmdLine(CmdLine):
+        """
+        Tests a param option type with defaults - and values from the command line.
+        The cmdline values should replace the defaults, not be appended
+        """
+        yaml_def = '''
+            supported_options:
+              - category:
+                options:
+                - name      : test_opt
+                  short     : t
+                  long      : test-opt
+                  opt       : param
+                  multi_type: no-limit
+                  datatype  : int
+                  default   :
+                  - FOO
+                  - BAR
+            '''
+        test_opt = None
+
+    args = "util-name --test-opt CMD1 CMD2 CMD3"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0] == "Data type does not match specification: ['FOO', 'BAR']"
+
+
+def test_too_many_defaults():
+    class TestCmdLine(CmdLine):
+        """
+        Tests a param option type with defaults - and values from the command line.
+        The cmdline values should replace the defaults, not be appended
+        """
+        yaml_def = '''
+            supported_options:
+              - category:
+                options:
+                - name      : test_opt
+                  short     : t
+                  long      : test-opt
+                  opt       : param
+                  multi_type: exactly
+                  count     : 2
+                  default   :
+                  - FOO
+                  - BAR
+                  - BAZ
+            '''
+        test_opt = None
+
+    args = "util-name -t Z"
+    try:
+        TestCmdLine.parse(args)
+    except CmdLineException as e:
+        assert e.args[0] == "Invalid defaults supplied: ['FOO', 'BAR', 'BAZ']"

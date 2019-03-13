@@ -649,6 +649,7 @@ def test_at_most_default_no_count_no_args_required():
               opt       : param
               default   : [default1, default2]
               multi_type: at-most
+              count     : 10
               required  : true
         '''
         test_opt = None
@@ -667,7 +668,7 @@ def test_at_most_default_no_count_no_args_optional():
             - name      : test_opt
               long      : test-opt
               opt       : param
-              default   : [default1, default2]
+              default   : default1
               multi_type: at-most
               required  : false
         '''
@@ -689,8 +690,9 @@ def test_at_most_default_no_count_args_required():
             - name      : test_opt
               long      : test-opt
               opt       : param
-              default   : [default1, default2]
+              default   : default1
               multi_type: at-most
+              count     : 1
               required  : true
         '''
         test_opt = None
@@ -1141,3 +1143,24 @@ def test_no_limit_count_no_default_args_optional():
     parse_result = TestCmdLine.parse(args)
     assert parse_result.value == ParseResultEnum.SUCCESS.value
     assert TestCmdLine.test_opt == ["cmdline1", "cmdline2"]
+
+
+def test_not_enough_exact():
+    class TestCmdLine(CmdLine):
+        yaml_def = '''
+        supported_options:
+          - category:
+            options:
+            - name      : test_opt
+              long      : test-opt
+              opt       : param
+              multi_type: exactly
+              count     : 3
+              required  : false
+        '''
+        test_opt = None
+    args = "util-name --test-opt ONLYONE"
+    parse_result = TestCmdLine.parse(args)
+    assert parse_result.value == ParseResultEnum.PARSE_ERROR.value
+    assert TestCmdLine.parse_errors[0] ==\
+           "--test-opt: expected 3 parameter(s) but found 1"
