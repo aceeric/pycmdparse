@@ -1,21 +1,20 @@
 # pycmdparse
 Python command line parser, and usage instructions generator
 
-There are many command-line parse utilities around, but I decided to make my own for fun. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions. I originally wrote this in C# to support a project that I was on which required me to develop several C#/.Net console utilities. I was interested to see what would be involved to transcribe something to Python that had originally been written in C#.
+There are many command-line parse utilities around, but I decided to make my own to get experience distributing a package. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions.
  
 The goals of pycmdparse are:
 
  1) Require the least amount of programming possible on the part of utility programmers using the package to easily and quickly get good, solid command-line parsing.
- 2) Provide a structure for usage instructions that presents them to the user in a form _generally_ consistent with other console utilities (given that there is variety in the approaches taken by various utility authors) 
+ 2) Provide a structure for usage instructions that presents them to the user in a form *generally* consistent with other console utilities (given that there is variety in the approaches taken by various utility authors) 
 
 The usage scenario is: You're writing a console utility in Python, and you have complex args that need to be parsed. You want to parse the args and display usage instructions in a way that is generally consistent with other console utils. So you do the following:
 
 1) Import this package and subclass the `CmdLine` class in your utility code
-2) Initialize the `yaml_def` field in the subclass with a yaml definition of options/params/usage (see below)
+2) Initialize the `yaml_def` field in the base class with a yaml definition of options/params/usage (see below)
 3) Call the `parse` function of the subclass to parse the command line.
-4) If successful, the `parse` function injects fields into your subclass - one for each option defined in the yaml spec
-5) Your utility accesses the injected fields to get the values provided by the user on the command line
-6) If there is an error parsing the command line, your utility uses the subclass to display errors, or display usage instructions as specified in the yaml. So you don't have to spend time programming that.
+4) If successful, the `parse` function injects fields into your subclass - one for each option defined in the yaml spec andyour utility accesses the injected fields to get the values provided by the user
+5) If there is an error parsing the command line, your utility uses the subclass to display errors, or display usage instructions as specified in the yaml.
 
 There is a basic example in the `examples` directory with extensive documentation of the yaml, and how the yaml is structured and used. Briefly, though, the yaml schema that the package expects is:
 ```
@@ -39,14 +38,19 @@ There is a basic example in the `examples` directory with extensive documentatio
     supported_options:
       - category: if empty, then no categorization, else displays an option category
         options:
-        - name    : a valid python identifier
-          short   : single letter option key
-          long    : long option key
-          hint    : a hint to tell the user what parameter to provide
-          required: true or false
-          opt     : option type. One of: bool, param
-          internal: true or false
-          default : a default value
+        - name      : a valid python identifier (if not provided, use short
+                      key or long key)
+          short     : single letter option key (e.g. -v)
+          long      : long option key (e.g. --verbose)
+          hint      : optional hint to tell the user what parameter to provide
+          required  : true or false - if omitted, option is not required
+          opt       : option type. One of: bool, param - if omitted, it's a param
+                      A param option takes one or more params
+          internal  : optional true or false - if internal, does not show in help
+          datatype  : optional for basic type validation: int, float, date, bool
+          multi-type: optional: exactly n, at most n, no limit
+          count     : used if multi-type is exactly or at-most
+          default   : optional default value or array of values
           help: >
             free form text describing the option
         - name    : repeats...
@@ -73,7 +77,7 @@ There is a basic example in the `examples` directory with extensive documentatio
 ```
 Regarding the 'supported_options', there are two option types: `bool` is for things like `-v`, or `--verbose` that are False by default, and set to a value of True by the presence of the option on the command line.
 
-The second option type is `param`. A `param` option accepts one or more parameters from the command line. Examples: `-f filename`, or `--filelist file1 file2 file3`.
+The second option type is `param`. A `param` option accepts one or more parameters from the command line. Examples: `-f filename`, or `--filelist file1 file2 file3`. The behavior is goverened by the `mult-type` and `count` keys.
 
 ### todo...
 1. Complete the packaging
