@@ -8,4 +8,4 @@ install:
 #  - pip install -e .
 
 script:
-  - pytest --cov=pycmdparse
+  - python -m pytest --cov=pycmdparse
