@@ -1,6 +1,8 @@
 # pycmdparse
 Python command line parser, and usage instructions generator
 
+[![Build Status](https://travis-ci.org/aceeric/pycmdparse.svg?branch=master)](https://travis-ci.org/aceeric/pycmdparse)
+
 There are many command-line parse utilities around, but I decided to make my own to get experience distributing a package. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions.
  
 The goals of pycmdparse are:
