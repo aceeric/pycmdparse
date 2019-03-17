@@ -153,9 +153,7 @@ Docs
    devguide
 
 
-Indices and tables
-==================
+Search Page
+===========
 
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
