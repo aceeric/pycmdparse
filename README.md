@@ -4,6 +4,7 @@ Python command line parser, and usage instructions generator
 [![Build Status](https://travis-ci.org/aceeric/pycmdparse.svg?branch=master)](https://travis-ci.org/aceeric/pycmdparse)
 [![Codecov](https://img.shields.io/codecov/c/github/aceeric/pycmdparse.svg)](https://codecov.io/gh/aceeric/pycmdparse)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://pypi.org/project/pycmdparse/)
+[![Documentation Status](https://readthedocs.org/projects/pycmdparse/badge/?version=latest)](https://pycmdparse.readthedocs.io/en/latest/?badge=latest)
 
 
 This is a command-line parser that uses yaml to define the set of supported options and params, and associated usage instructions. It supports parsing args, detecting errors, validating param data types, and printing usage instructions.
