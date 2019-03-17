@@ -1,4 +1,4 @@
-How to use pycmdparse
-=====================
+Developer Guide
+===============
 
 Foo!

@@ -37,7 +37,7 @@ setup(
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords="arg argument parse command line usage instructions console utility",
+    keywords="command line arg argument parse usage instructions console",
     packages=['pycmdparse'],
     install_requires=['PyYAML==5.1b3'],
     python_requires='~=3.6',

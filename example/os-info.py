@@ -8,6 +8,9 @@ from pycmdparse.positional_params import PositionalParams
 
 
 class MyCmdLine(CmdLine):
+    """
+    A simple utility that displays OS and Python info.
+    """
     yaml_def = '''
     utility:
       name: os-info

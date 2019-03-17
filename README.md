@@ -2,7 +2,7 @@
 Python command line parser, and usage instructions generator
 
 [![Build Status](https://travis-ci.org/aceeric/pycmdparse.svg?branch=master)](https://travis-ci.org/aceeric/pycmdparse)
-![Codecov](https://img.shields.io/codecov/c/github/aceeric/pycmdparse.svg)
+[![Codecov](https://img.shields.io/codecov/c/github/aceeric/pycmdparse.svg)](https://codecov.io/gh/aceeric/pycmdparse)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://pypi.org/project/pycmdparse/)
 
 
@@ -21,7 +21,7 @@ The usage scenario is: You're writing a console utility in Python, and you have 
 4) If successful, the `parse` function injects fields into your subclass - one for each option defined in the yaml spec. Your utility then accesses the injected fields to get the values provided by the user
 5) If there is an error parsing the command line, your utility uses the base class to display errors  or display usage instructions - as specified in the yaml.
 
-There is a basic example in the `examples` directory in github with extensive documentation of the yaml, and how the yaml is structured and used. Briefly, though, the yaml schema that the package expects is:
+There is a basic example in the `example` directory in github with extensive documentation of the yaml, and how the yaml is structured and used. Briefly, though, the yaml schema that the package expects is:
 ```
     utility:
         name: your utility name

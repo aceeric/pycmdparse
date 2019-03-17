@@ -8,11 +8,11 @@ pycmdparse
 
 If successful, the ``parse`` function injects fields into your subclass - one for each option defined in the yaml spec. Your utility then accesses the injected fields to get the values provided by the user
 
-If there is an error parsing the command line, or the user specifies -h or --help, your utility uses the base class ``display_info`` method to display the errors or display usage instructions - as specified in the yaml.
+If there is an error parsing the command line, or the user specifies -h or --help, your utility calls the base class ``display_info`` method to display the errors or display usage instructions - as specified in the yaml.
 
 A simple example
 ^^^^^^^^^^^^^^^^
-This is a console utility called "os-info":
+This is an illustrative console utility called "os-info":
 
 .. code-block:: python
 
@@ -113,39 +113,39 @@ Terms
 ^^^^^
 
 1) **arg**: An *arg* is a token on the command line. The first arg is the command name
-2) **option**: An *option* is an argument used by the command. E.g.: --verbose
+2) **option**: An *option* is an argument used by the command. E.g.: --verbose. Options begin with a dash or a double dash
 3) **parameter**: A *parameter* is a value that is used by an option or by the command. In this expression: ``--max-threads=100``, *--max-threads* is the option and *100* is the parameter. Positional parameters are parameters used by the command that are not paired with an option. In this expression: ``my-command FOO``, *FOO* is a positional param.
 
 Features
 ^^^^^^^^
 
 * Uses yaml to define command-line requirements and usage instructions
-* Supports two types of option:
+* Supports two types of options:
 
   * A **bool** option is true or false. Sometimes referred to as a switch. E.g.: -v, or --verbose. The value is false if omitted from the command line, and true if present on the command line
-  * A **param** option takes one or more parameters. The default is a single param option. E.g.: --threads=100. But, a param option can be defined to accept an *exact* number of parameters, *up to* a specified number of parameters, or *no limit* to the number of parameters
+  * A **param** option takes one or more parameters. The default is a single param option. E.g.: --threads=100. A param option can be defined to accept an *exact* number of parameters, *up to* a specified number of parameters, or can accept *no limit* to the number of parameters
 
 * Supports short-form options (-v) and long-form options (--verbose). The yaml can specify both or either.
-* Supports required and non-required options. Non-required options can have a default specified in the yaml. If a required option is omitted from the command line, then it is a parse error
+* Supports required and non-required options. Non-required options can have a default specified in the yaml. If a required option is omitted from the command line, then it is a parse error. If a non-required option with a default is not specified on the command line, then the option value is the default in the yaml
 * parameters can be expressed as follows on the command line: ``--max-threads=100``. ``--max-threads 100``. ``-t=100``. ``-t 100``. All are equivalent.
 * Supports concatenation of short-form options. E.g.: ``-v -t -c`` and ``-vtc`` are handled identically. In addition, if a short-form option takes a value, it can also be concatenated. These are the same: ``-v -t -c=100`` and ``-vtc=100`` ``-vtc 100`` ``-v -t -c 100``
 * Provides basic data typing of parameters: int, bool, float, date. If you specify a data type then the parser validates the parameter so you don't have to
 * For options taking multiple params, these can be provided on the command line this way: ``--takes-three X Y Z`` or this way: ``--takes-three X --takes-three Y --takes-three Z``
 * Supports the double dash ("--") option to indicate the beginning of positional parameters
 * Parses positional parameters and provides them in a list
-* Enables a custom validation call-back for you to perform any unique parameter validations
+* Enables a custom validation call-back for you to perform any parameter validations not provided out of the box
 * Displays usage instructions in a generally consistent form - fitted to the width of the console window so you don't have to spend time on formatting help text in your utility
 * Enables you to categorize your supported options. These categories are displayed in the usage instructions. So if you have groups or related sets of options, you can categorize them for readability,
 * Enables you to explicitly define a brief usage scenario - like "my-utility [options] FILE". If you don't explicitly define a brief usage scenario, ``pycmdparse`` builds one for you from the defined supported options and positional params.
-* Injects fields into your subclass based on the defined options so you have a simple way of accessing the command line values. Boolean options are python ``bool`` fields. Single-value param options are scalars. And multi-valued param options and positional params are lists.
+* Injects fields into your subclass based on the defined options so you have an intuitive way of accessing the command line values. Boolean options are python ``bool`` fields. Single-value param options are scalars. Multi-valued param options and positional params are lists.
 
 The code
 ^^^^^^^^
 
 https://github.com/aceeric/pycmdparse
 
-Developer Guide
-^^^^^^^^^^^^^^^
+Docs
+^^^^
 
 .. toctree::
    :maxdepth: 2
