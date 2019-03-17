@@ -3,12 +3,14 @@ Python command line parser, and usage instructions generator
 
 [![Build Status](https://travis-ci.org/aceeric/pycmdparse.svg?branch=master)](https://travis-ci.org/aceeric/pycmdparse)
 ![Codecov](https://img.shields.io/codecov/c/github/aceeric/pycmdparse.svg)
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://pypi.org/project/pycmdparse/)
 
-There are many command-line parse utilities around, but I decided to make my own to get experience distributing a package. This particular parser uses yaml to define how to process the command line, and also how to format usage instructions. It supports parsing args, detecting errors, validating data types, and printing usage instructions.
+
+This is a command-line parser that uses yaml to define the set of supported options and params, and associated usage instructions. It supports parsing args, detecting errors, validating param data types, and printing usage instructions.
  
 The goals of pycmdparse are:
 
- 1) Require the least amount of programming possible on the part of utility programmers using the package to easily and quickly get good, solid command-line parsing.
+ 1) Require the least amount of programming possible on the part of utility programmers using the package to easily and quickly get good, solid command-line parsing
  2) Provide a structure for usage instructions that presents them to the user in a form *generally* consistent with other console utilities (given that there is variety in the approaches taken by various utility authors) 
 
 The usage scenario is: You're writing a console utility in Python, and you have complex args that need to be parsed. You want to parse the args and display usage instructions in a way that is generally consistent with other console utils. So you do the following:
@@ -16,10 +18,10 @@ The usage scenario is: You're writing a console utility in Python, and you have 
 1) Import this package and subclass the `CmdLine` class in your utility code
 2) Initialize the `yaml_def` field in the base class with a yaml definition of options/params/usage (see below)
 3) Call the `parse` function of the subclass to parse the command line.
-4) If successful, the `parse` function injects fields into your subclass - one for each option defined in the yaml spec andyour utility accesses the injected fields to get the values provided by the user
-5) If there is an error parsing the command line, your utility uses the subclass to display errors, or display usage instructions as specified in the yaml.
+4) If successful, the `parse` function injects fields into your subclass - one for each option defined in the yaml spec. Your utility then accesses the injected fields to get the values provided by the user
+5) If there is an error parsing the command line, your utility uses the base class to display errors  or display usage instructions - as specified in the yaml.
 
-There is a basic example in the `examples` directory with extensive documentation of the yaml, and how the yaml is structured and used. Briefly, though, the yaml schema that the package expects is:
+There is a basic example in the `examples` directory in github with extensive documentation of the yaml, and how the yaml is structured and used. Briefly, though, the yaml schema that the package expects is:
 ```
     utility:
         name: your utility name
@@ -78,9 +80,6 @@ There is a basic example in the `examples` directory with extensive documentatio
     addendum: >
       free-form text, for copyright, links, etc.
 ```
-Regarding the 'supported_options', there are two option types: `bool` is for things like `-v`, or `--verbose` that are False by default, and set to a value of True by the presence of the option on the command line.
+Regarding the 'supported_options', there are two option types: `bool` is for things like `-v`, or `--verbose` that are False by default, and are set to True by the presence of the option on the command line.
 
-The second option type is `param`. A `param` option accepts one or more parameters from the command line. Examples: `-f filename`, or `--filelist file1 file2 file3`. The behavior is goverened by the `mult-type` and `count` keys.
-
-### todo...
-1. Complete the packaging
+The second option type is `param`. A `param` option accepts one or more parameters from the command line. Examples: `-f filename`, or `--filelist file1 file2 file3`. The behavior is governed by the `mult-type` and `count` keys.

@@ -36,10 +36,9 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Text Processing :: Markup",
     ],
     keywords="arg argument parse command line usage instructions console utility",
-    packages=['pycmdparse', 'example'],
+    packages=['pycmdparse'],
     install_requires=['PyYAML==5.1b3'],
     python_requires='~=3.6',
 )

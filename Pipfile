@@ -12,6 +12,7 @@ pytest = "*"
 pycmdparse = {version = "*",editable = true}
 pytest-cov = "*"
 iflake8 = "*"
+sphinx = "*"
 
 [requires]
 python_version = "3.6"
