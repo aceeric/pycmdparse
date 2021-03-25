@@ -39,6 +39,6 @@ setup(
     ],
     keywords="command line arg argument parse usage instructions console",
     packages=['pycmdparse'],
-    install_requires=['PyYAML==5.1b3'],
+    install_requires=['PyYAML==5.4'],
     python_requires='~=3.6',
 )
